@@ -11,10 +11,18 @@ import ru.netology.dto.PostResponseDto
 import ru.netology.repository.PostRepository
 
 fun Routing.v1() {
-    route("/api/v1/posts"){
+    route("/api/v1/posts") {
         val repo by kodein().instance<PostRepository>()
         get {
             val response = repo.getAll().map { PostResponseDto.fromModel(it) }
+            call.respond(response)
+        }
+    }
+
+    route("/api/v1/ads") {
+        val repo by kodein().instance<PostRepository>()
+        get {
+            val response = repo.getAds().map { PostResponseDto.fromModel(it) }
             call.respond(response)
         }
     }

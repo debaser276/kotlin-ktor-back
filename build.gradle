@@ -1,5 +1,10 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'application'
+}
+
+application {
+    mainClassName = "ru.netology.ApplicationKt"
 }
 
 group 'ru.netology'
@@ -26,3 +31,5 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+task stage(dependsOn: installDist)

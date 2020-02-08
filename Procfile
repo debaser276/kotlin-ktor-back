@@ -1,0 +1,1 @@
+web: ./build/install/kotlin-ktor/bin/kotlin-ktor
