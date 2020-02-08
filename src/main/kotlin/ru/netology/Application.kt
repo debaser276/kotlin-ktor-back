@@ -14,7 +14,6 @@ import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
 import ru.netology.route.v1
 
-
 fun main(args : Array<String>) {
     EngineMain.main(args)
 }
