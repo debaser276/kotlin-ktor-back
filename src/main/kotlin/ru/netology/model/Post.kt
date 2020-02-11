@@ -1,4 +1,4 @@
-package ru.netology.firstapp.dto
+package ru.netology.model
 
 enum class PostType {
     POST, VIDEO, EVENT, AD, REPOST

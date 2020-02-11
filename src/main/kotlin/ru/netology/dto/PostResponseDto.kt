@@ -1,8 +1,8 @@
 package ru.netology.dto
 
-import ru.netology.firstapp.dto.Location
-import ru.netology.firstapp.dto.Post
-import ru.netology.firstapp.dto.PostType
+import ru.netology.model.Location
+import ru.netology.model.Post
+import ru.netology.model.PostType
 
 data class PostResponseDto (
     val id: Int,
@@ -16,6 +16,7 @@ data class PostResponseDto (
     var likes: Int = 0,
     var comments: Int = 0,
     var shares: Int = 0,
+    var views: Int = 0,
     var likedByAuthor: Boolean = false,
     var commentedByAuthor: Boolean = false,
     var sharedByAuthor: Boolean = false,
@@ -34,6 +35,7 @@ data class PostResponseDto (
             likes = post.likes,
             comments = post.comments,
             shares = post.shares,
+            views = post.views,
             likedByAuthor = post.likedByAuthor,
             commentedByAuthor = post.commentedByAuthor,
             sharedByAuthor = post.sharedByAuthor,

@@ -5,16 +5,13 @@ import io.ktor.features.NotFoundException
 import io.ktor.features.ParameterConversionException
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.routing.Routing
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.routing.*
 import org.kodein.di.generic.instance
 import org.kodein.di.ktor.kodein
 import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
-import ru.netology.firstapp.dto.Post
-import ru.netology.firstapp.dto.PostType
+import ru.netology.model.Post
+import ru.netology.model.PostType
 import ru.netology.repository.PostRepository
 
 fun Routing.v1() {
@@ -28,12 +25,6 @@ fun Routing.v1() {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.getById(id) ?: throw NotFoundException()
             val response = PostResponseDto.fromModel(post)
-            call.respond(response)
-        }
-        get("/{id}/rm") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
-            repo.removeById(id)
-            val response = repo.getAll().map { PostResponseDto.fromModel(it) }
             call.respond(response)
         }
         get("/{id}/like") {
@@ -65,8 +56,19 @@ fun Routing.v1() {
         }
         post {
             val input = call.receive<PostRequestDto>()
-            val post = Post(id = input.id, author = input.author, created = System.currentTimeMillis() / 1000, type = input.type)
+            val post = Post(
+                id = input.id,
+                author = input.author,
+                created = System.currentTimeMillis() / 1000,
+                type = input.type
+            )
             val response = PostResponseDto.fromModel(repo.save(post))
+            call.respond(response)
+        }
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
+            repo.removeById(id)
+            val response = repo.getAll().map { PostResponseDto.fromModel(it) }
             call.respond(response)
         }
     }

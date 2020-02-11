@@ -1,6 +1,6 @@
 package ru.netology.repository
 
-import ru.netology.firstapp.dto.Post
+import ru.netology.model.Post
 
 interface PostRepository {
     suspend fun getAll(): List<Post>

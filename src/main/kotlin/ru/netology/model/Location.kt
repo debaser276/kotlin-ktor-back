@@ -1,4 +1,4 @@
-package ru.netology.firstapp.dto
+package ru.netology.model
 
 class Location(val lat: Double, val lng: Double)
 
