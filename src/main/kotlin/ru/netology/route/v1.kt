@@ -3,6 +3,7 @@ package ru.netology.route
 import io.ktor.application.call
 import io.ktor.features.NotFoundException
 import io.ktor.features.ParameterConversionException
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
@@ -30,22 +31,19 @@ fun Routing.v1() {
         get("/{id}/like") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.likeById(id) ?: throw NotFoundException()
-            repo.save(post)
-            val response = PostResponseDto.fromModel(post)
+            val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
         get("/{id}/dislike") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.dislikeById(id) ?: throw NotFoundException()
-            repo.save(post)
-            val response = PostResponseDto.fromModel(post)
+            val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
         get("/{id}/share") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.shareById(id) ?: throw NotFoundException()
-            repo.save(post)
-            val response = PostResponseDto.fromModel(post)
+            val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
         get("/{id}/repost") {
@@ -68,8 +66,7 @@ fun Routing.v1() {
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             repo.removeById(id)
-            val response = repo.getAll().map { PostResponseDto.fromModel(it) }
-            call.respond(response)
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
