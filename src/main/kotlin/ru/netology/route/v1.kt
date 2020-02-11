@@ -64,9 +64,13 @@ fun Routing.v1() {
             call.respond(response)
         }
         delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
-            repo.removeById(id)
-            call.respond(HttpStatusCode.OK)
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+            } else {
+                repo.removeById(id)
+                call.respond(HttpStatusCode.OK)
+            }
         }
     }
 }
