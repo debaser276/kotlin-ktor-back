@@ -1,6 +1,6 @@
 package ru.netology.dto
 
-import ru.netology.firstapp.dto.PostType
+import ru.netology.model.PostType
 
 data class PostRequestDto (
     val id: Int,
