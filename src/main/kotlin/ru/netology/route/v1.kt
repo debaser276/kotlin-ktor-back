@@ -48,7 +48,8 @@ fun Routing.v1() {
             call.respond(response)
         }
         post("/{id}/repost") {
-            val repost = Post(id = 0, author = "User", created = System.currentTimeMillis() / 1000, sourceId = id, type = PostType.REPOST)
+            repo.getById(id) ?: throw NotFoundException()
+            val repost = Post(author = "User", sourceId = id, type = PostType.REPOST)
             val response = PostResponseDto.fromModel(repo.save(repost))
             call.respond(response)
         }
