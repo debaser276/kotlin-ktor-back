@@ -28,25 +28,25 @@ fun Routing.v1() {
             val response = PostResponseDto.fromModel(post)
             call.respond(response)
         }
-        get("/{id}/like") {
+        post("/{id}/like") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.likeById(id) ?: throw NotFoundException()
             val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
-        get("/{id}/dislike") {
+        post("/{id}/dislike") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.dislikeById(id) ?: throw NotFoundException()
             val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
-        get("/{id}/share") {
+        post("/{id}/share") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.shareById(id) ?: throw NotFoundException()
             val response = PostResponseDto.fromModel(repo.save(post))
             call.respond(response)
         }
-        get("/{id}/repost") {
+        post("/{id}/repost") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
             val repost = Post(id = 0, author = "User", created = System.currentTimeMillis() / 1000, sourceId = id, type = PostType.REPOST)
             val response = PostResponseDto.fromModel(repo.save(repost))
@@ -55,9 +55,7 @@ fun Routing.v1() {
         post {
             val input = call.receive<PostRequestDto>()
             val post = Post(
-                id = input.id,
                 author = input.author,
-                created = System.currentTimeMillis() / 1000,
                 type = input.type
             )
             val response = PostResponseDto.fromModel(repo.save(post))
@@ -65,8 +63,8 @@ fun Routing.v1() {
         }
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
+            val post = repo.likeById(id) ?: throw NotFoundException()
             repo.removeById(id)
-            call.respond(HttpStatusCode.OK)
         }
     }
 }

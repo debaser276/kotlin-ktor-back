@@ -5,9 +5,9 @@ enum class PostType {
 }
 
 data class Post (
-    val id: Int,
+    val id: Int = 0,
     val author: String,
-    val created: Long,
+    val created: Long = System.currentTimeMillis() / 1000,
     val content: String? = null,
     val address: String? = null,
     val loc: Location? = null,

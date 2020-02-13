@@ -16,11 +16,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun getById(id: Int): Post? {
-        mutex.withLock {
-            return posts.find { it.id == id }
-        }
-    }
+    override suspend fun getById(id: Int): Post? = posts.find { it.id == id }
 
     override suspend fun save(post: Post): Post {
         mutex.withLock {
