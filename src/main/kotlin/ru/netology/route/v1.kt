@@ -62,7 +62,8 @@ fun Routing.v1() {
             call.respond(response)
         }
         delete("/{id}") {
-            repo.removeById(id) ?: throw NotFoundException()
+            val response = repo.removeById(id) ?: throw NotFoundException()
+            call.respond(response)
         }
     }
 }
