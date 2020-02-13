@@ -4,6 +4,7 @@ import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.NotFoundException
 import io.ktor.features.ParameterConversionException
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
@@ -31,8 +32,8 @@ fun Application.module() {
     }
 
     install(StatusPages) {
-        exception<NotImplementedError> {e ->
-            call.respond(HttpStatusCode.NotImplemented)
+        exception<NotFoundException> {e ->
+            call.respond(HttpStatusCode.NotFound)
             throw e
         }
         exception<ParameterConversionException> {e ->
