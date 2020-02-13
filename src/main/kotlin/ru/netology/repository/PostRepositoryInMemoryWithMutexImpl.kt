@@ -34,9 +34,15 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun removeById(id: Int) {
+    override suspend fun removeById(id: Int): List<Post>? {
         mutex.withLock {
-            posts.removeIf { it.id == id }
+            return when(val index = posts.indexOfFirst { it.id == id }) {
+                -1 -> null
+                else -> {
+                    posts.removeIf { it.id == id }
+                    posts.reversed()
+                }
+            }
         }
     }
 

@@ -62,8 +62,7 @@ fun Routing.v1() {
             call.respond(response)
         }
         delete("/{id}") {
-            repo.likeById(id) ?: throw NotFoundException()
-            repo.removeById(id)
+            repo.removeById(id) ?: throw NotFoundException()
         }
     }
 }
