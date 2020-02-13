@@ -40,6 +40,10 @@ fun Application.module() {
             call.respond(HttpStatusCode.BadRequest)
             throw e
         }
+        exception<NotImplementedError> {e ->
+            call.respond(HttpStatusCode.NotImplemented)
+            throw e
+        }
         exception<Throwable> {e ->
             call.respond(HttpStatusCode.InternalServerError)
             throw e
