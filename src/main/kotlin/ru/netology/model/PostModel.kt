@@ -4,7 +4,11 @@ enum class PostType {
     POST, VIDEO, EVENT, AD, REPOST
 }
 
-data class Post (
+class Location(val lat: Double, val lng: Double)
+
+infix fun Double.x(that: Double) = Location(this, that)
+
+data class PostModel (
     val id: Int = 0,
     val author: String,
     val created: Long = System.currentTimeMillis() / 1000,

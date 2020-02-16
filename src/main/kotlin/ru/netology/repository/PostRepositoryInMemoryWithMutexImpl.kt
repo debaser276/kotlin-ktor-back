@@ -2,23 +2,23 @@ package ru.netology.repository
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.netology.model.Post
+import ru.netology.model.PostModel
 
 class PostRepositoryInMemoryWithMutexImpl : PostRepository {
     private var nextId = 1
-    private val posts = mutableListOf<Post>()
+    private val posts = mutableListOf<PostModel>()
     private val mutex = Mutex()
 
-    override suspend fun getAll(): List<Post> {
+    override suspend fun getAll(): List<PostModel> {
         mutex.withLock {
             posts.onEach { it.views++ }
             return posts.reversed()
         }
     }
 
-    override suspend fun getById(id: Int): Post? = posts.find { it.id == id }
+    override suspend fun getById(id: Int): PostModel? = posts.find { it.id == id }
 
-    override suspend fun save(post: Post): Post {
+    override suspend fun save(post: PostModel): PostModel {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == post.id }) {
                 -1 -> {
@@ -34,7 +34,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun removeById(id: Int): List<Post>? {
+    override suspend fun removeById(id: Int): List<PostModel>? {
         mutex.withLock {
             return when(val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null
@@ -46,7 +46,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun likeById(id: Int): Post? {
+    override suspend fun likeById(id: Int): PostModel? {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null
@@ -65,7 +65,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun dislikeById(id: Int): Post? {
+    override suspend fun dislikeById(id: Int): PostModel? {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null
@@ -84,7 +84,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun shareById(id: Int): Post? {
+    override suspend fun shareById(id: Int): PostModel? {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null

@@ -1,7 +1,7 @@
 package ru.netology.dto
 
 import ru.netology.model.Location
-import ru.netology.model.Post
+import ru.netology.model.PostModel
 import ru.netology.model.PostType
 
 data class PostResponseDto (
@@ -23,7 +23,7 @@ data class PostResponseDto (
     val type: PostType = PostType.POST
 ) {
     companion object {
-        fun fromModel(post: Post) = PostResponseDto(
+        fun fromModel(post: PostModel) = PostResponseDto(
             id = post.id,
             author = post.author,
             created = post.created,

@@ -12,12 +12,16 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.server.cio.EngineMain
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.singleton
+import org.kodein.di.Kodein
+import org.kodein.di.generic.*
 import org.kodein.di.ktor.KodeinFeature
+import org.kodein.di.ktor.kodein
 import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
+import ru.netology.route.RoutingV1
 import ru.netology.route.v1
+import ru.netology.service.FileService
+import javax.naming.ConfigurationException
 
 fun main(args : Array<String>) {
     EngineMain.main(args)
@@ -51,10 +55,16 @@ fun Application.module() {
     }
 
     install(KodeinFeature) {
+        constant(tag = "upload-dir") with (
+                environment.config.propertyOrNull("static.upload.dir")?.getString() ?:
+                    throw ConfigurationException("Upload dir is not specified"))
+        bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
         bind<PostRepository>() with singleton { PostRepositoryInMemoryWithMutexImpl() }
+        bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance()) }
     }
 
     install(Routing) {
-        v1()
+        val routingV1 by kodein().instance<RoutingV1>()
+        routingV1.setup(this)
     }
 }

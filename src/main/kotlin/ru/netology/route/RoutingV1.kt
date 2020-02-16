@@ -4,8 +4,10 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.features.NotFoundException
 import io.ktor.features.ParameterConversionException
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.request.receive
+import io.ktor.request.receiveMultipart
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.pipeline.PipelineContext
@@ -13,9 +15,33 @@ import org.kodein.di.generic.instance
 import org.kodein.di.ktor.kodein
 import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
-import ru.netology.model.Post
+import ru.netology.model.PostModel
 import ru.netology.model.PostType
 import ru.netology.repository.PostRepository
+import ru.netology.service.FileService
+
+class RoutingV1(
+    private val staticPath: String,
+    private val fileService: FileService
+) {
+    fun setup(configuration: Routing) {
+        with(configuration) {
+            route("/api/v1") {
+                static("/static") {
+                    files(staticPath)
+                }
+
+                route("/media") {
+                    post {
+                        val multipart = call.receiveMultipart()
+                        val response = fileService.save(multipart)
+                        call.respond(response)
+                    }
+                }
+            }
+        }
+    }
+}
 
 val <T: Any> PipelineContext<T, ApplicationCall>.id
     get() = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
@@ -49,13 +75,13 @@ fun Routing.v1() {
         }
         post("/{id}/repost") {
             repo.getById(id) ?: throw NotFoundException()
-            val repost = Post(author = "User", sourceId = id, type = PostType.REPOST)
+            val repost = PostModel(author = "User", sourceId = id, type = PostType.REPOST)
             val response = PostResponseDto.fromModel(repo.save(repost))
             call.respond(response)
         }
         post {
             val input = call.receive<PostRequestDto>()
-            val post = Post(
+            val post = PostModel(
                 author = input.author,
                 type = input.type
             )
