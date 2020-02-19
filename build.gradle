@@ -22,6 +22,10 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "org.kodein.di:kodein-di-generic-jvm:6.3.3"
     implementation "org.kodein.di:kodein-di-framework-ktor-server-jvm:6.3.3"
+    implementation "io.ktor:ktor-auth:1.2.4"
+    implementation "io.ktor:ktor-auth-jwt:1.2.4"
+    implementation "commons-logging:commons-logging:1.2"
+    implementation "org.springframework.security:spring-security-crypto:5.1.6.RELEASE"
     testImplementation "io.ktor:ktor-server-tests:1.2.4"
 }
 
