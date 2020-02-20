@@ -17,6 +17,8 @@ data class PostModel (
     val loc: Location? = null,
     val link: String? = null,
     val sourceId: Int? = null,
+    val media: String? = null,
+    val mediaType: MediaType? = null,
     var likes: Int = 0,
     var comments: Int = 0,
     var shares: Int = 0,

@@ -1,6 +1,7 @@
 package ru.netology.dto
 
 import ru.netology.model.Location
+import ru.netology.model.MediaType
 import ru.netology.model.PostModel
 import ru.netology.model.PostType
 
@@ -13,6 +14,8 @@ data class PostResponseDto (
     val loc: Location? = null,
     val link: String? = null,
     val sourceId: Int? = null,
+    val media: String? = null,
+    val mediaType: MediaType? = null,
     var likes: Int = 0,
     var comments: Int = 0,
     var shares: Int = 0,

@@ -23,15 +23,20 @@ import ru.netology.model.PostType
 import ru.netology.model.UserModel
 import ru.netology.repository.PostRepository
 import ru.netology.service.FileService
+import ru.netology.service.PostService
 import ru.netology.service.UserService
 
 val <T: Any> PipelineContext<T, ApplicationCall>.id
     get() = call.parameters["id"]?.toIntOrNull() ?: throw ParameterConversionException("id", "Long")
 
+val <T: Any> PipelineContext<T, ApplicationCall>.me
+    get() = call.authentication.principal<UserModel>()
+
 class RoutingV1(
     private val staticPath: String,
     private val fileService: FileService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val postService: PostService
 ) {
     fun setup(configuration: Routing) {
         with(configuration) {
@@ -62,48 +67,37 @@ class RoutingV1(
                         }
                     }
                     route("/posts") {
-                        val repo by kodein().instance<PostRepository>()
                         get {
-                            val response = repo.getAll().map { PostResponseDto.fromModel(it) }
+                            val response = postService.getAll(me!!.username)
                             call.respond(response)
                         }
                         get("/{id}") {
-                            val post = repo.getById(id) ?: throw NotFoundException()
-                            val response = PostResponseDto.fromModel(post)
+                            val response = postService.getById(id)
                             call.respond(response)
                         }
                         post("/{id}/like") {
-                            val post = repo.likeById(id) ?: throw NotFoundException()
-                            val response = PostResponseDto.fromModel(repo.save(post))
+                            val response = postService.likeById(id)
                             call.respond(response)
                         }
                         post("/{id}/dislike") {
-                            val post = repo.dislikeById(id) ?: throw NotFoundException()
-                            val response = PostResponseDto.fromModel(repo.save(post))
+                            val response = postService.dislikeById(id)
                             call.respond(response)
                         }
                         post("/{id}/share") {
-                            val post = repo.shareById(id) ?: throw NotFoundException()
-                            val response = PostResponseDto.fromModel(repo.save(post))
+                            val response = postService.shareById(id)
                             call.respond(response)
                         }
                         post("/{id}/repost") {
-                            repo.getById(id) ?: throw NotFoundException()
-                            val repost = PostModel(author = "User", sourceId = id, type = PostType.REPOST)
-                            val response = PostResponseDto.fromModel(repo.save(repost))
+                            val response = postService.repost(id)
                             call.respond(response)
                         }
                         post {
                             val input = call.receive<PostRequestDto>()
-                            val post = PostModel(
-                                author = input.author,
-                                type = input.type
-                            )
-                            val response = PostResponseDto.fromModel(repo.save(post))
+                            val response = postService.post(input, me!!.username)
                             call.respond(response)
                         }
                         delete("/{id}") {
-                            val response = repo.removeById(id) ?: throw NotFoundException()
+                            val response = postService.removeById(id)
                             call.respond(response)
                         }
                     }

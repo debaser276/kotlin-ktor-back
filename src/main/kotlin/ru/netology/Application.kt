@@ -29,6 +29,7 @@ import ru.netology.repository.UserRepositoryInMemoryWithMutex
 import ru.netology.route.RoutingV1
 import ru.netology.service.FileService
 import ru.netology.service.JWTTokenService
+import ru.netology.service.PostService
 import ru.netology.service.UserService
 import javax.naming.ConfigurationException
 
@@ -75,9 +76,10 @@ fun Application.module() {
         bind<JWTTokenService>() with eagerSingleton { JWTTokenService() }
         bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
         bind<PostRepository>() with singleton { PostRepositoryInMemoryWithMutexImpl() }
+        bind<PostService>() with eagerSingleton { PostService(instance()) }
         bind<UserRepository>() with eagerSingleton { UserRepositoryInMemoryWithMutex() }
         bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
-        bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance()) }
+        bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance(), instance()) }
     }
 
     install(Authentication) {
