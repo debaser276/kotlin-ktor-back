@@ -37,7 +37,7 @@ class UserService(
     suspend fun authenticate(input: AuthenticationRequestDto): AuthenticationResponseDto {
         val model = repo.getByUsername(input.username) ?: throw NotFoundException()
         if (!passwordEncoder.matches(input.password, model.password)) {
-            throw InvalidPasswordException("Wrong password!")
+            throw InvalidPasswordException()
         }
         val token = tokenService.generate(model.id)
         return AuthenticationResponseDto(token)

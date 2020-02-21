@@ -2,7 +2,6 @@ package ru.netology.repository
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.netology.dto.AuthenticationRequestDto
 import ru.netology.model.UserModel
 
 class UserRepositoryInMemoryWithMutex : UserRepository {

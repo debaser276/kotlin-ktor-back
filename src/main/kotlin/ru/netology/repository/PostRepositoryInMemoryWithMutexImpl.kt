@@ -2,6 +2,8 @@ package ru.netology.repository
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.netology.exception.AlreadyLikedException
+import ru.netology.exception.NotLikedYetException
 import ru.netology.model.PostModel
 
 class PostRepositoryInMemoryWithMutexImpl : PostRepository {
@@ -46,39 +48,45 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
         }
     }
 
-    override suspend fun likeById(id: Int): PostModel? {
+    override suspend fun likeById(id: Int, userId: Int): PostModel? {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null
                 else -> {
                     val post = posts[index]
-                    val copy = post.copy(likes = post.likes + 1)
-                    try {
-                        posts[index]
-                    } catch (e: ArrayIndexOutOfBoundsException) {
-                        println("size: ${posts.size}")
-                        println(index)
-                    }
-                    copy
+                    if (!post.likedSet.contains(userId)) {
+                        post.likedSet.add(userId)
+                        val copy = post.copy(likes = post.likes.plus(1), likedSet = post.likedSet)
+                        try {
+                            posts[index]
+                        } catch (e: ArrayIndexOutOfBoundsException) {
+                            println("size: ${posts.size}")
+                            println(index)
+                        }
+                        copy
+                    } else throw AlreadyLikedException()
                 }
             }
         }
     }
 
-    override suspend fun dislikeById(id: Int): PostModel? {
+    override suspend fun dislikeById(id: Int, userId: Int): PostModel? {
         mutex.withLock {
             return when (val index = posts.indexOfFirst { it.id == id }) {
                 -1 -> null
                 else -> {
                     val post = posts[index]
-                    val copy = post.copy(likes = if (post.likes == 0) 0 else post.likes - 1)
-                    try {
-                        posts[index]
-                    } catch (e: ArrayIndexOutOfBoundsException) {
-                        println("size: ${posts.size}")
-                        println(index)
-                    }
-                    copy
+                    if (post.likedSet.contains(userId)) {
+                        post.likedSet.remove(userId)
+                        val copy = post.copy(likes = post.likes.minus(1), likedSet = post.likedSet)
+                        try {
+                            posts[index]
+                        } catch (e: ArrayIndexOutOfBoundsException) {
+                            println("size: ${posts.size}")
+                            println(index)
+                        }
+                        copy
+                    } else throw NotLikedYetException()
                 }
             }
         }

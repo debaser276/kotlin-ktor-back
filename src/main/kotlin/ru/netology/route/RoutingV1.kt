@@ -4,9 +4,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
-import io.ktor.features.NotFoundException
 import io.ktor.features.ParameterConversionException
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.files
 import io.ktor.http.content.static
@@ -15,13 +13,8 @@ import io.ktor.request.receiveMultipart
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.pipeline.PipelineContext
-import org.kodein.di.generic.instance
-import org.kodein.di.ktor.kodein
 import ru.netology.dto.*
-import ru.netology.model.PostModel
-import ru.netology.model.PostType
 import ru.netology.model.UserModel
-import ru.netology.repository.PostRepository
 import ru.netology.service.FileService
 import ru.netology.service.PostService
 import ru.netology.service.UserService
@@ -68,7 +61,7 @@ class RoutingV1(
                     }
                     route("/posts") {
                         get {
-                            val response = postService.getAll(me!!.username)
+                            val response = postService.getAll()
                             call.respond(response)
                         }
                         get("/{id}") {
@@ -76,11 +69,11 @@ class RoutingV1(
                             call.respond(response)
                         }
                         post("/{id}/like") {
-                            val response = postService.likeById(id)
+                            val response = postService.likeById(id, me!!.id)
                             call.respond(response)
                         }
                         post("/{id}/dislike") {
-                            val response = postService.dislikeById(id)
+                            val response = postService.dislikeById(id, me!!.id)
                             call.respond(response)
                         }
                         post("/{id}/share") {
@@ -97,17 +90,16 @@ class RoutingV1(
                             call.respond(response)
                         }
                         delete("/{id}") {
-                            val response = postService.removeById(id)
+                            val response = postService.removeById(id, me!!.username)
                             call.respond(response)
                         }
                     }
-                }
-
-                route("/media") {
-                    post {
-                        val multipart = call.receiveMultipart()
-                        val response = fileService.save(multipart)
-                        call.respond(response)
+                    route("/media") {
+                        post {
+                            val multipart = call.receiveMultipart()
+                            val response = fileService.save(multipart)
+                            call.respond(response)
+                        }
                     }
                 }
             }

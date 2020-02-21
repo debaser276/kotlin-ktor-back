@@ -14,14 +14,16 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.server.cio.EngineMain
-import kotlinx.coroutines.runBlocking
 import org.kodein.di.generic.*
 import org.kodein.di.ktor.KodeinFeature
 import org.kodein.di.ktor.kodein
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.dto.ErrorResponseDto
+import ru.netology.exception.AlreadyLikedException
+import ru.netology.exception.ForbiddenException
 import ru.netology.exception.InvalidPasswordException
+import ru.netology.exception.NotLikedYetException
 import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
 import ru.netology.repository.UserRepository
@@ -48,6 +50,18 @@ fun Application.module() {
     install(StatusPages) {
         exception<InvalidPasswordException> {e ->
             call.respond(HttpStatusCode.Unauthorized, ErrorResponseDto("Wrong password"))
+            throw e
+        }
+        exception<ForbiddenException>() {e ->
+            call.respond(HttpStatusCode.Forbidden, ErrorResponseDto("Access denied!"))
+            throw e
+        }
+        exception<AlreadyLikedException> {e ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post have already been liked"))
+            throw e
+        }
+        exception<NotLikedYetException> {e ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post haven't been liked yet"))
             throw e
         }
         exception<NotFoundException> {e ->
