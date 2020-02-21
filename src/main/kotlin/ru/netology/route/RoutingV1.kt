@@ -42,7 +42,7 @@ class RoutingV1(
                     val input = call.receive<AuthenticationRequestDto>()
                     when(userService.getByUsername(input.username)) {
                         null -> call.respond(userService.registrate(input))
-                        else -> call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Пользователь с таким логином уже зарегистрирован"))
+                        else -> call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Login already exists"))
                     }
                 }
 
