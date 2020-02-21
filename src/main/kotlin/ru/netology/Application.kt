@@ -20,10 +20,7 @@ import org.kodein.di.ktor.kodein
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.dto.ErrorResponseDto
-import ru.netology.exception.AlreadyLikedException
-import ru.netology.exception.ForbiddenException
-import ru.netology.exception.InvalidPasswordException
-import ru.netology.exception.NotLikedYetException
+import ru.netology.exception.*
 import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
 import ru.netology.repository.UserRepository
@@ -52,8 +49,16 @@ fun Application.module() {
             call.respond(HttpStatusCode.Unauthorized, ErrorResponseDto("Wrong password"))
             throw e
         }
+        exception<UserNotFoundException> {e ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("User not found"))
+            throw e
+        }
         exception<ForbiddenException>() {e ->
             call.respond(HttpStatusCode.Forbidden, ErrorResponseDto("Access denied!"))
+            throw e
+        }
+        exception<PostNotFoundException> {e ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Post with provided id not found"))
             throw e
         }
         exception<AlreadyLikedException> {e ->
