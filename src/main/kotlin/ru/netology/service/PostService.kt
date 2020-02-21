@@ -32,19 +32,31 @@ class PostService( private val repo: PostRepository) {
         return PostResponseDto.fromModel(repo.save(model))
     }
 
-    suspend fun repost(id: Int): PostResponseDto {
+    suspend fun editPost(id: Int, input: PostRequestDto, username: String): PostResponseDto {
+        val model = repo.getById(id) ?: throw NotFoundException()
+        if (username == model.author) {
+            return PostResponseDto.fromModel(repo.save(model.copy(
+                content = input.content,
+                address = input.address,
+                link = input.link)))
+            } else {
+            throw ForbiddenException()
+        }
+    }
+
+    suspend fun repost(id: Int, username: String): PostResponseDto {
         repo.getById(id) ?: throw NotFoundException()
-        val repost = PostModel(author = "User", sourceId = id, type = PostType.REPOST)
+        val repost = PostModel(author = username, sourceId = id, type = PostType.REPOST)
         return PostResponseDto.fromModel(repo.save(repost))
     }
 
-    suspend fun post(input: PostRequestDto, author: String): PostResponseDto {
-        val post = PostModel(
-            author = author,
+    suspend fun post(input: PostRequestDto, username: String): PostResponseDto {
+        val model = PostModel(
+            author = username,
             content = input.content,
             type = input.type
         )
-        return PostResponseDto.fromModel(repo.save(post))
+        return PostResponseDto.fromModel(repo.save(model))
     }
 
     suspend fun removeById(id: Int, username: String): List<PostResponseDto> {
