@@ -2,11 +2,12 @@ package ru.netology.repository
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.slf4j.Logger
 import ru.netology.exception.AlreadyLikedException
 import ru.netology.exception.NotLikedYetException
 import ru.netology.model.PostModel
 
-class PostRepositoryInMemoryWithMutexImpl : PostRepository {
+class PostRepositoryInMemoryWithMutexImpl(private val logger: Logger) : PostRepository {
     private var nextId = 1
     private val posts = mutableListOf<PostModel>()
     private val mutex = Mutex()
@@ -60,8 +61,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
                         try {
                             posts[index]
                         } catch (e: ArrayIndexOutOfBoundsException) {
-                            println("size: ${posts.size}")
-                            println(index)
+                            logger.error("size: ${posts.size} $index")
                         }
                         copy
                     } else throw AlreadyLikedException()
@@ -82,8 +82,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
                         try {
                             posts[index]
                         } catch (e: ArrayIndexOutOfBoundsException) {
-                            println("size: ${posts.size}")
-                            println(index)
+                            logger.error("size: ${posts.size} $index")
                         }
                         copy
                     } else throw NotLikedYetException()
@@ -102,8 +101,7 @@ class PostRepositoryInMemoryWithMutexImpl : PostRepository {
                     try {
                         posts[index]
                     } catch (e: ArrayIndexOutOfBoundsException) {
-                        println("size: ${posts.size}")
-                        println(index)
+                        logger.error("size: ${posts.size} $index")
                     }
                     copy
                 }
