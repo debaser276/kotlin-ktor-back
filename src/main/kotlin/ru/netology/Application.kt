@@ -30,11 +30,11 @@ fun Application.module() {
     }
 
     install(StatusPages) {
-        this.exceptions()
+        exceptions()
     }
 
     install(KodeinFeature) {
-        this.singletons(this@module)
+        singletons(this@module)
     }
 
     install(Authentication) {
