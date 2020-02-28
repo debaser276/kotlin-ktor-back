@@ -1,35 +1,21 @@
 package ru.netology
 
 import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
 import io.ktor.gson.gson
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.server.cio.EngineMain
 import org.kodein.di.generic.*
 import org.kodein.di.ktor.KodeinFeature
 import org.kodein.di.ktor.kodein
-import org.slf4j.event.Level
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
-import ru.netology.dto.ErrorResponseDto
-import ru.netology.exception.*
-import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
-import ru.netology.repository.UserRepository
-import ru.netology.repository.UserRepositoryInMemoryWithMutex
+import ru.netology.kodein.singletons
 import ru.netology.route.RoutingV1
-import ru.netology.service.FileService
 import ru.netology.service.JWTTokenService
-import ru.netology.service.PostService
 import ru.netology.service.UserService
-import javax.naming.ConfigurationException
+import ru.netology.statuspages.exceptions
 
 fun main(args : Array<String>) {
     EngineMain.main(args)
@@ -44,60 +30,11 @@ fun Application.module() {
     }
 
     install(StatusPages) {
-        exception<InvalidPasswordException> {e ->
-            call.respond(HttpStatusCode.Unauthorized, ErrorResponseDto("Wrong password"))
-            throw e
-        }
-        exception<UserNotFoundException> {e ->
-            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("User not found"))
-            throw e
-        }
-        exception<ForbiddenException>() {e ->
-            call.respond(HttpStatusCode.Forbidden, ErrorResponseDto("Access denied!"))
-            throw e
-        }
-        exception<PostNotFoundException> {e ->
-            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Post with provided id not found"))
-            throw e
-        }
-        exception<AlreadyLikedException> {e ->
-            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post have already been liked"))
-            throw e
-        }
-        exception<NotLikedYetException> {e ->
-            call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post haven't been liked yet"))
-            throw e
-        }
-        exception<NotFoundException> {e ->
-            call.respond(HttpStatusCode.NotFound)
-            throw e
-        }
-        exception<ParameterConversionException> {e ->
-            call.respond(HttpStatusCode.BadRequest)
-            throw e
-        }
-        exception<NotImplementedError> {e ->
-            call.respond(HttpStatusCode.NotImplemented)
-            throw e
-        }
-        exception<Throwable> {e ->
-            call.respond(HttpStatusCode.InternalServerError)
-            throw e
-        }
+        this.exceptions()
     }
 
     install(KodeinFeature) {
-        constant(tag = "upload-dir") with (
-                environment.config.propertyOrNull("static.upload.dir")?.getString() ?:
-                    throw ConfigurationException("Upload dir is not specified"))
-        bind<PasswordEncoder>() with eagerSingleton { BCryptPasswordEncoder() }
-        bind<JWTTokenService>() with eagerSingleton { JWTTokenService() }
-        bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
-        bind<PostRepository>() with singleton { PostRepositoryInMemoryWithMutexImpl(log) }
-        bind<PostService>() with eagerSingleton { PostService(instance()) }
-        bind<UserRepository>() with eagerSingleton { UserRepositoryInMemoryWithMutex() }
-        bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
-        bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance(), instance()) }
+        this.singletons(this@module)
     }
 
     install(Authentication) {
