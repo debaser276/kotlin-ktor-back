@@ -13,6 +13,6 @@ class JWTTokenService {
 
     fun generate(id: Int): String = JWT.create()
         .withClaim("id", id)
-        .withExpiresAt(Calendar.getInstance().apply { add(Calendar.MINUTE, 5) }.time)
+        .withExpiresAt(Calendar.getInstance().apply { add(Calendar.HOUR, 24) }.time)
         .sign(algo)
 }
