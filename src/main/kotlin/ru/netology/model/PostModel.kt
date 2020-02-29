@@ -21,11 +21,10 @@ data class PostModel (
     val mediaType: MediaType? = null,
     var likes: Int = 0,
     var likedSet: MutableSet<Int> = mutableSetOf(),
-    var comments: Int = 0,
+    var reposts: Int = 0,
+    var repostedByMe: Boolean = false,
     var shares: Int = 0,
+    var sharedByMe: Boolean = false,
     var views: Int = 0,
-    var likedByAuthor: Boolean = false,
-    var commentedByAuthor: Boolean = false,
-    var sharedByAuthor: Boolean = false,
     val type: PostType = PostType.POST
 )

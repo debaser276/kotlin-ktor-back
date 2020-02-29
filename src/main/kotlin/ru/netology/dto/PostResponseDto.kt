@@ -18,12 +18,11 @@ data class PostResponseDto (
     val mediaType: MediaType? = null,
     var likes: Int = 0,
     val likedSet: MutableSet<Int> = mutableSetOf(),
-    var comments: Int = 0,
+    var reposts: Int = 0,
+    var repostedByMe: Boolean = false,
+    var sharedByMe: Boolean = false,
     var shares: Int = 0,
     var views: Int = 0,
-    var likedByAuthor: Boolean = false,
-    var commentedByAuthor: Boolean = false,
-    var sharedByAuthor: Boolean = false,
     val type: PostType = PostType.POST
 ) {
     companion object {
@@ -38,12 +37,11 @@ data class PostResponseDto (
             sourceId = post.sourceId,
             likes = post.likes,
             likedSet = post.likedSet,
-            comments = post.comments,
+            reposts = post.reposts,
+            repostedByMe = post.repostedByMe,
             shares = post.shares,
+            sharedByMe = post.sharedByMe,
             views = post.views,
-            likedByAuthor = post.likedByAuthor,
-            commentedByAuthor = post.commentedByAuthor,
-            sharedByAuthor = post.sharedByAuthor,
             type = post.type
         )
     }
