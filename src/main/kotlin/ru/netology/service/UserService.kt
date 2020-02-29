@@ -34,7 +34,7 @@ class UserService(
             val model =
                 repo.add(UserModel(username = input.username, password = passwordEncoder.encode(input.password)))
             val token = tokenService.generate(model.id)
-            return AuthenticationResponseDto(token)
+            return AuthenticationResponseDto(model.id, token)
         }
     }
 
@@ -44,6 +44,6 @@ class UserService(
             throw InvalidPasswordException()
         }
         val token = tokenService.generate(model.id)
-        return AuthenticationResponseDto(token)
+        return AuthenticationResponseDto(model.id, token)
     }
 }

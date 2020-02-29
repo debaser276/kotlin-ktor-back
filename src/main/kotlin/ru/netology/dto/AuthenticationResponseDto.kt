@@ -1,3 +1,3 @@
 package ru.netology.dto
 
-data class AuthenticationResponseDto(val token: String)
+data class AuthenticationResponseDto(val id: Int, val token: String)
