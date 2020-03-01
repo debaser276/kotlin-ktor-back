@@ -9,7 +9,7 @@ import ru.netology.model.PostModel
 import ru.netology.model.PostType
 import ru.netology.repository.PostRepository
 
-class PostService( private val repo: PostRepository) {
+class PostService(private val repo: PostRepository) {
     suspend fun getAll(): List<PostResponseDto> = repo.getAll()
         .map { PostResponseDto.fromModel(it) }
 
@@ -45,10 +45,18 @@ class PostService( private val repo: PostRepository) {
         }
     }
 
-    suspend fun repost(id: Int, username: String, content: String): PostResponseDto {
-        repo.getById(id) ?: throw PostNotFoundException()
-        val repost = PostModel(author = username, sourceId = id, content = content, type = PostType.REPOST)
-        return PostResponseDto.fromModel(repo.save(repost))
+    suspend fun repost(sourceId: Int, username: String, content: String): PostResponseDto {
+        val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
+        PostResponseDto.fromModel(repo.save(PostModel(
+            author = username,
+            sourceId = sourceId,
+            content = content,
+            type = PostType.REPOST
+        )))
+        return PostResponseDto.fromModel(repo.save(sourcePost.copy(
+            reposts = sourcePost.reposts++,
+            repostedByMe = true
+        )))
     }
 
     suspend fun post(input: PostRequestDto, username: String): PostResponseDto {
