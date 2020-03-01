@@ -65,7 +65,7 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
             authorId = authorId,
             author = author,
             sourceId = sourceId,
-            content = "Repost of $content (SourceId: $sourceId)",
+            content = "Repost of SourceId: $sourceId. $content",
             type = PostType.REPOST
         )))
         return PostResponseDto.fromModel(repo.save(sourcePost.copy(
