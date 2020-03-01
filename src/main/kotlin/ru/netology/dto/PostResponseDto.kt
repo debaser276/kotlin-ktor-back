@@ -7,6 +7,7 @@ import ru.netology.model.PostType
 
 data class PostResponseDto (
     val id: Int,
+    val authorId: Int,
     val author: String,
     val created: Long,
     val content: String?,
@@ -28,6 +29,7 @@ data class PostResponseDto (
     companion object {
         fun fromModel(post: PostModel) = PostResponseDto(
             id = post.id,
+            authorId = post.authorId,
             author = post.author,
             created = post.created,
             content = post.content,
