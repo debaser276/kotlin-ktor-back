@@ -45,9 +45,9 @@ class PostService( private val repo: PostRepository) {
         }
     }
 
-    suspend fun repost(id: Int, username: String): PostResponseDto {
+    suspend fun repost(id: Int, username: String, content: String): PostResponseDto {
         repo.getById(id) ?: throw PostNotFoundException()
-        val repost = PostModel(author = username, sourceId = id, type = PostType.REPOST)
+        val repost = PostModel(author = username, sourceId = id, content = content, type = PostType.REPOST)
         return PostResponseDto.fromModel(repo.save(repost))
     }
 
