@@ -56,7 +56,7 @@ class PostService(private val repo: PostRepository) {
         )))
         return PostResponseDto.fromModel(repo.save(sourcePost.copy(
             reposts = sourcePost.reposts + 1,
-            repostedByMe = true
+            repostedSet = sourcePost.repostedSet.apply { add(authorId) }
         )))
     }
 

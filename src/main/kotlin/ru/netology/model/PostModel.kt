@@ -23,7 +23,7 @@ data class PostModel (
     var likes: Int = 0,
     var likedSet: MutableSet<Int> = mutableSetOf(),
     var reposts: Int = 0,
-    var repostedByMe: Boolean = false,
+    var repostedSet: MutableSet<Int> = mutableSetOf(),
     var shares: Int = 0,
     var sharedByMe: Boolean = false,
     var views: Int = 0,
