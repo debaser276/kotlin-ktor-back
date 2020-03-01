@@ -18,14 +18,17 @@ import ru.netology.service.UserService
 import javax.naming.ConfigurationException
 
 fun Kodein.MainBuilder.singletons(app: Application) {
+    constant(tag = "result-size") with (
+            app.environment.config.propertyOrNull("static.api.result-size")?.getString()?.toInt() ?:
+                throw ConfigurationException("Result-size is not specified"))
     constant(tag = "upload-dir") with (
             app.environment.config.propertyOrNull("static.upload.dir")?.getString() ?:
-            throw ConfigurationException("Upload dir is not specified"))
+                throw ConfigurationException("Upload dir is not specified"))
     bind<PasswordEncoder>() with eagerSingleton { BCryptPasswordEncoder() }
     bind<JWTTokenService>() with eagerSingleton { JWTTokenService() }
     bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
     bind<PostRepository>() with singleton { PostRepositoryInMemoryWithMutexImpl(app.log) }
-    bind<PostService>() with eagerSingleton { PostService(instance()) }
+    bind<PostService>() with eagerSingleton { PostService(instance(), instance(tag = "result-size")) }
     bind<UserRepository>() with eagerSingleton { UserRepositoryInMemoryWithMutex() }
     bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
     bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance(), instance()) }

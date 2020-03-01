@@ -64,6 +64,15 @@ class RoutingV1(
                             val response = postService.getAll()
                             call.respond(response)
                         }
+                        get("/recent") {
+                            call.respond(postService.getRecent())
+                        }
+                        get("/{id}/before") {
+                            call.respond(postService.getBefore(id))
+                        }
+                        get("/{id{/after") {
+                            call.respond(postService.getAfter(id))
+                        }
                         get("/{id}") {
                             val response = postService.getById(id)
                             call.respond(response)

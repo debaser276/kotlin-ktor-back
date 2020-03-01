@@ -10,9 +10,21 @@ import ru.netology.model.PostModel
 import ru.netology.model.PostType
 import ru.netology.repository.PostRepository
 
-class PostService(private val repo: PostRepository) {
+class PostService(private val repo: PostRepository, private val resultSize: Int) {
     suspend fun getAll(): List<PostResponseDto> = repo.getAll()
         .map { PostResponseDto.fromModel(it) }
+
+    suspend fun getRecent(): List<PostResponseDto> {
+        return getAll().take(resultSize)
+    }
+
+    suspend fun getBefore(id: Int): List<PostResponseDto> {
+        return getAll().asSequence().filter { it.id < id }.take(resultSize).toList()
+    }
+
+    suspend fun getAfter(id: Int): List<PostResponseDto> {
+        return getAll().asSequence().filter { it.id > id }.take(resultSize).toList()
+    }
 
     suspend fun getById(id: Int): PostResponseDto {
         val model = repo.getById(id) ?: throw PostNotFoundException()
