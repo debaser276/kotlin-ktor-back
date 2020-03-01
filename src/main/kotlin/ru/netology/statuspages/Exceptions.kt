@@ -10,6 +10,9 @@ import ru.netology.dto.ErrorResponseDto
 import ru.netology.exception.*
 
 fun StatusPages.Configuration.exceptions() {
+    exception<AlreadyRepostedException> {
+        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post has already been reposted"))
+    }
     exception<InvalidPasswordException> { e ->
         call.respond(HttpStatusCode.Unauthorized, ErrorResponseDto("Wrong password"))
         throw e
@@ -27,7 +30,7 @@ fun StatusPages.Configuration.exceptions() {
         throw e
     }
     exception<AlreadyLikedException> { e ->
-        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post have already been liked"))
+        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post has already been liked"))
         throw e
     }
     exception<NotLikedYetException> { e ->

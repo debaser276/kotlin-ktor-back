@@ -3,6 +3,7 @@ package ru.netology.service
 import io.ktor.features.NotFoundException
 import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
+import ru.netology.exception.AlreadyRepostedException
 import ru.netology.exception.ForbiddenException
 import ru.netology.exception.PostNotFoundException
 import ru.netology.model.PostModel
@@ -47,6 +48,7 @@ class PostService(private val repo: PostRepository) {
 
     suspend fun repost(sourceId: Int, authorId: Int, author: String, content: String): PostResponseDto {
         val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
+        if (sourcePost.repostedSet.contains(authorId)) throw AlreadyRepostedException()
         PostResponseDto.fromModel(repo.save(PostModel(
             authorId = authorId,
             author = author,
