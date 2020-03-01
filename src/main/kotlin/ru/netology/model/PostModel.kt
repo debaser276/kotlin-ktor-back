@@ -10,6 +10,7 @@ infix fun Double.x(that: Double) = Location(this, that)
 
 data class PostModel (
     val id: Int = 0,
+    val authorId: Int,
     val author: String,
     val created: Long = System.currentTimeMillis() / 1000,
     val content: String? = null,

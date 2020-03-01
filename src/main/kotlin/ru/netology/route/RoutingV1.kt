@@ -87,12 +87,12 @@ class RoutingV1(
                         }
                         post("/{id}/repost") {
                             val input = call.receive<PostRequestDto>()
-                            val response = postService.repost(id, me!!.username, input.content)
+                            val response = postService.repost(id, me!!.id, me!!.username, input.content)
                             call.respond(response)
                         }
                         post {
                             val input = call.receive<PostRequestDto>()
-                            val response = postService.post(input, me!!.username)
+                            val response = postService.post(input, me!!.id, me!!.username)
                             call.respond(response)
                         }
                         delete("/{id}") {

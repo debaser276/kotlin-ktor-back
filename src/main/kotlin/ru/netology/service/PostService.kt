@@ -45,10 +45,11 @@ class PostService(private val repo: PostRepository) {
         }
     }
 
-    suspend fun repost(sourceId: Int, username: String, content: String): PostResponseDto {
+    suspend fun repost(sourceId: Int, authorId: Int, author: String, content: String): PostResponseDto {
         val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
         PostResponseDto.fromModel(repo.save(PostModel(
-            author = username,
+            authorId = authorId,
+            author = author,
             sourceId = sourceId,
             content = content,
             type = PostType.REPOST
@@ -59,8 +60,9 @@ class PostService(private val repo: PostRepository) {
         )))
     }
 
-    suspend fun post(input: PostRequestDto, username: String): PostResponseDto {
+    suspend fun post(input: PostRequestDto, authorId: Int, username: String): PostResponseDto {
         val model = PostModel(
+            authorId = authorId,
             author = username,
             content = input.content,
             type = input.type
