@@ -70,7 +70,7 @@ class RoutingV1(
                         get("/{id}/before") {
                             call.respond(postService.getBefore(id))
                         }
-                        get("/{id{/after") {
+                        get("/{id}/after") {
                             call.respond(postService.getAfter(id))
                         }
                         get("/{id}") {
