@@ -1,6 +1,5 @@
 package ru.netology.service
 
-import io.ktor.features.NotFoundException
 import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
 import ru.netology.exception.AlreadyRepostedException

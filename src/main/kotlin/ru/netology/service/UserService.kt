@@ -1,6 +1,5 @@
 package ru.netology.service
 
-import io.ktor.features.NotFoundException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -11,7 +10,6 @@ import ru.netology.exception.InvalidPasswordException
 import ru.netology.exception.UserNotFoundException
 import ru.netology.model.UserModel
 import ru.netology.repository.UserRepository
-import java.nio.channels.AlreadyBoundException
 
 class UserService(
     private val repo: UserRepository,
