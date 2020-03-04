@@ -5,6 +5,8 @@ import ru.netology.dto.PostResponseDto
 import ru.netology.exception.AlreadyRepostedException
 import ru.netology.exception.ForbiddenException
 import ru.netology.exception.PostNotFoundException
+import ru.netology.model.AttachmentModel
+import ru.netology.model.MediaType
 import ru.netology.model.PostModel
 import ru.netology.model.PostType
 import ru.netology.repository.PostRepository
@@ -78,7 +80,8 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
             authorId = authorId,
             author = username,
             content = input.content,
-            type = input.type
+            type = input.type,
+            attachment = AttachmentModel(input.attachmentId, mediaType = MediaType.IMAGE)
         )
         return PostResponseDto.fromModel(repo.save(model))
     }

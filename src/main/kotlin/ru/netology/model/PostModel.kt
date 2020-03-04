@@ -26,5 +26,5 @@ data class PostModel (
     var sharedByMe: Boolean = false,
     var views: Int = 0,
     val type: PostType = PostType.POST,
-    val attachmentModel: AttachmentModel? = null
+    val attachment: AttachmentModel? = null
 )
