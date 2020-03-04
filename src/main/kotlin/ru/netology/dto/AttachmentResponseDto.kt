@@ -3,7 +3,7 @@ package ru.netology.dto
 import ru.netology.model.AttachmentModel
 import ru.netology.model.MediaType
 
-data class MediaResponseDto (
+data class AttachmentResponseDto (
     val id: String,
     val mediaType: MediaType
 ) {
