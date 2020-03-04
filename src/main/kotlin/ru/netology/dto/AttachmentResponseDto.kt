@@ -8,7 +8,7 @@ data class AttachmentResponseDto (
     val mediaType: MediaType
 ) {
     companion object {
-        fun fromModel(model: AttachmentModel) = AttachmentModel(
+        fun fromModel(model: AttachmentModel) = AttachmentResponseDto(
             id = model.id,
             mediaType = model.mediaType
         )

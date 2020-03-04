@@ -1,7 +1,6 @@
 package ru.netology.dto
 
 import ru.netology.model.Location
-import ru.netology.model.MediaType
 import ru.netology.model.PostModel
 import ru.netology.model.PostType
 
@@ -15,8 +14,6 @@ data class PostResponseDto (
     val loc: Location? = null,
     val link: String? = null,
     val sourceId: Int? = null,
-    val media: String? = null,
-    val mediaType: MediaType? = null,
     var likes: Int = 0,
     val likedSet: MutableSet<Int> = mutableSetOf(),
     var reposts: Int = 0,
@@ -24,7 +21,8 @@ data class PostResponseDto (
     var sharedByMe: Boolean = false,
     var shares: Int = 0,
     var views: Int = 0,
-    val type: PostType = PostType.POST
+    val type: PostType = PostType.POST,
+    val attachment: AttachmentResponseDto?
 ) {
     companion object {
         fun fromModel(post: PostModel) = PostResponseDto(
@@ -44,7 +42,8 @@ data class PostResponseDto (
             shares = post.shares,
             sharedByMe = post.sharedByMe,
             views = post.views,
-            type = post.type
+            type = post.type,
+            attachment = post.attachment?.let { AttachmentResponseDto.fromModel(post.attachment) }
         )
     }
 }
