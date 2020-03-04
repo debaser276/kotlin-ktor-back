@@ -4,7 +4,7 @@ enum class MediaType {
     IMAGE
 }
 
-data class MediaModel(
+data class AttachmentModel(
     val id: String,
     val mediaType: MediaType
 )
