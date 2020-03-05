@@ -7,5 +7,5 @@ data class PostRequestDto (
     val address: String,
     val link: String,
     val type: PostType,
-    val attachmentId: String
+    val attachmentId: String? = null
 )

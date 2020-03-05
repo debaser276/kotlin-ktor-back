@@ -81,7 +81,9 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
             author = username,
             content = input.content,
             type = input.type,
-            attachment = AttachmentModel(input.attachmentId, mediaType = MediaType.IMAGE)
+            attachment = input.attachmentId?.let {
+                AttachmentModel(input.attachmentId, mediaType = MediaType.IMAGE)
+            }
         )
         return PostResponseDto.fromModel(repo.save(model))
     }
