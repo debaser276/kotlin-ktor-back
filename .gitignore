@@ -1,5 +1,3 @@
-fcm/
-!fcm/.gitkeep
 !fcm/fcm-encrypted.json
 Thumbs.db*
 HELP.md
