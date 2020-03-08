@@ -5,7 +5,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-src/main/kotlin/ru/netology/fcm/
+/fcm/
+!/fcm/.gitkeep
 
 ### STS ###
 .apt_generated
