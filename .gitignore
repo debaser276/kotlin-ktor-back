@@ -1,3 +1,5 @@
+fcm/
+!fcm/.gitkeep
 Thumbs.db*
 HELP.md
 .gradle
@@ -5,8 +7,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-/fcm/
-!/fcm/.gitkeep
 
 ### STS ###
 .apt_generated
