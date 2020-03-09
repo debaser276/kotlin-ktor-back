@@ -46,13 +46,13 @@ class FCMService(
         }
     }
 
-    suspend fun sendLikeAdd(likedName: String, recepientPostId: Int, recipientToken: String, postContent: String?) = withContext(Dispatchers.IO) {
+    suspend fun sendLikeAdd(likedName: String, recipientPostId: Int, recipientToken: String, postContent: String?) = withContext(Dispatchers.IO) {
         try {
             val message = Message.builder()
                 .putData("type", "likeAdd")
-                .putData("recipientPostId", recepientPostId.toString())
+                .putData("recipientPostId", recipientPostId.toString())
                 .putData("title", "Like")
-                .putData("content", "Your post: ${recepientPostId.toString()} $postContent, has been liked by $likedName")
+                .putData("content", "Your post: ${recipientPostId.toString()} $postContent, has been liked by $likedName")
                 .setToken(recipientToken)
                 .build()
 
