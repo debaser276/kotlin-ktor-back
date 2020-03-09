@@ -12,10 +12,7 @@ import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
 import ru.netology.repository.UserRepository
 import ru.netology.repository.UserRepositoryInMemoryWithMutex
 import ru.netology.route.RoutingV1
-import ru.netology.service.FileService
-import ru.netology.service.JWTTokenService
-import ru.netology.service.PostService
-import ru.netology.service.UserService
+import ru.netology.service.*
 
 fun Kodein.MainBuilder.singletons(app: Application) {
     constant(tag = "result-size") with (
@@ -27,6 +24,18 @@ fun Kodein.MainBuilder.singletons(app: Application) {
     constant(tag = "jwt-secret") with (
             app.environment.config.propertyOrNull("secondapp.jwt.secret")?.getString() ?:
                 throw ConfigurationException("JWT secret is not specified"))
+    constant(tag = "fcm-password") with (
+            app.environment.config.propertyOrNull("secondapp.fcm.password")?.getString() ?:
+                throw ConfigurationException("FCM password is not specified"))
+    constant(tag = "fcm-salt") with (
+            app.environment.config.propertyOrNull("secondapp.fcm.salt")?.getString() ?:
+                throw ConfigurationException("FCM salt is not specified"))
+    constant(tag = "fcm-db-url") with (
+            app.environment.config.propertyOrNull("secondapp.fcm.db-url")?.getString() ?:
+                throw ConfigurationException("FCM db url is not specified"))
+    constant(tag = "fcm-path") with (
+            app.environment.config.propertyOrNull("secondapp.fcm.path")?.getString() ?:
+                throw ConfigurationException("FCM JSON path is not specified"))
     bind<PasswordEncoder>() with eagerSingleton { BCryptPasswordEncoder() }
     bind<JWTTokenService>() with eagerSingleton { JWTTokenService(instance(tag = "jwt-secret")) }
     bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
@@ -35,4 +44,12 @@ fun Kodein.MainBuilder.singletons(app: Application) {
     bind<UserRepository>() with eagerSingleton { UserRepositoryInMemoryWithMutex() }
     bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
     bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance(), instance()) }
+    bind<FCMService>() with eagerSingleton {
+        FCMService(
+            instance(tag = "fcm-db-url"),
+            instance(tag = "fcm-password"),
+            instance(tag = "fcm-salt"),
+            instance(tag = "fcm-path")
+        )
+    }
 }
