@@ -43,7 +43,13 @@ fun Kodein.MainBuilder.singletons(app: Application) {
     bind<PostService>() with eagerSingleton { PostService(instance(), instance(tag = "result-size")) }
     bind<UserRepository>() with eagerSingleton { UserRepositoryInMemoryWithMutex() }
     bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
-    bind<RoutingV1>() with eagerSingleton { RoutingV1(instance(tag = "upload-dir"), instance(), instance(), instance()) }
+    bind<RoutingV1>() with eagerSingleton {
+        RoutingV1(instance(tag = "upload-dir"),
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+            app.log) }
     bind<FCMService>() with eagerSingleton {
         FCMService(
             instance(tag = "fcm-db-url"),

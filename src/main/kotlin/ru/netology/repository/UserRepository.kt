@@ -9,4 +9,5 @@ interface UserRepository {
     suspend fun getByUsername(username: String): UserModel?
     suspend fun add(item: UserModel): UserModel
     suspend fun save(item: UserModel): UserModel
+    suspend fun savePushTokenWithUserId(id: Int, token: String)
 }

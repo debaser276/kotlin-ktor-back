@@ -6,15 +6,19 @@ import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
 import io.ktor.features.ParameterConversionException
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.cio.HttpPipelineCoroutine
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.request.receive
 import io.ktor.request.receiveMultipart
+import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.pipeline.PipelineContext
+import org.slf4j.Logger
 import ru.netology.dto.*
 import ru.netology.model.UserModel
+import ru.netology.service.FCMService
 import ru.netology.service.FileService
 import ru.netology.service.PostService
 import ru.netology.service.UserService
@@ -29,7 +33,9 @@ class RoutingV1(
     private val staticPath: String,
     private val fileService: FileService,
     private val userService: UserService,
-    private val postService: PostService
+    private val postService: PostService,
+    private val fcmService: FCMService,
+    private val logger: Logger
 ) {
     fun setup(configuration: Routing) {
         with(configuration) {
@@ -53,6 +59,14 @@ class RoutingV1(
                 }
 
                 authenticate {
+                    route("/push") {
+                        post() {
+                            val input = call.receive<PushRequestDto>()
+                            userService.savePushTokenWithUserID(me!!.id, input.token)
+                            fcmService.sendWelcome(me!!.username, input.token)
+                            call.respond(HttpStatusCode.OK)
+                        }
+                    }
                     route("/me") {
                         get {
                             val me = call.authentication.principal<UserModel>()

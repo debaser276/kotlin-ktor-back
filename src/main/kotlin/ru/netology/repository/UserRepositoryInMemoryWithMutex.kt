@@ -8,6 +8,7 @@ class UserRepositoryInMemoryWithMutex : UserRepository {
     private var nextId = 1
     private val items = mutableListOf<UserModel>()
     private val mutex = Mutex()
+    private val pushTokenWithUserIdMap = mutableMapOf<Int, String>()
 
     override suspend fun getAll(): List<UserModel> = items.toList()
 
@@ -16,6 +17,10 @@ class UserRepositoryInMemoryWithMutex : UserRepository {
     override suspend fun getByIds(ids: Collection<Int>): List<UserModel> = items.filter { ids.contains(it.id) }
 
     override suspend fun getByUsername(username: String): UserModel? = items.find { it.username == username }
+
+    override suspend fun savePushTokenWithUserId(id: Int, token: String) {
+        pushTokenWithUserIdMap[id] = token
+    }
 
     override suspend fun add(item: UserModel): UserModel {
         mutex.withLock {

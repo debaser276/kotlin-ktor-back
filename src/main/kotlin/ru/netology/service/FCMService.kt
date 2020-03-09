@@ -32,11 +32,12 @@ class FCMService(
         FirebaseApp.initializeApp(options)
     }
 
-    suspend fun send(recipientId: Long, recipientToken: String, title: String) = withContext(Dispatchers.IO) {
+    suspend fun sendWelcome(recipientName: String, recipientToken: String) = withContext(Dispatchers.IO) {
         try {
             val message = Message.builder()
-                .putData("recipientId", recipientId.toString())
-                .putData("title", title)
+                .putData("type", "welcome")
+                .putData("recipientName", recipientName)
+                .putData("title", "Welcome $recipientName")
                 .setToken(recipientToken)
                 .build()
 

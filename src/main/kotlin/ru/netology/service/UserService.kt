@@ -44,4 +44,6 @@ class UserService(
         val token = tokenService.generate(model.id)
         return AuthenticationResponseDto(model.id, token)
     }
+
+    suspend fun savePushTokenWithUserID(id: Int, token: String) = repo.savePushTokenWithUserId(id, token)
 }
