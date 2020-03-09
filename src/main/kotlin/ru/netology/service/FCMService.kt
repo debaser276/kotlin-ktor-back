@@ -36,8 +36,22 @@ class FCMService(
         try {
             val message = Message.builder()
                 .putData("type", "welcome")
-                .putData("recipientName", recipientName)
                 .putData("title", "Welcome $recipientName")
+                .setToken(recipientToken)
+                .build()
+
+            FirebaseMessaging.getInstance().send(message)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun sendLikeAdd(likedName: String, recipientToken: String, postContent: String?) = withContext(Dispatchers.IO) {
+        try {
+            val message = Message.builder()
+                .putData("type", "likeAdd")
+                .putData("title", "Like")
+                .putData("content", "Your post: $postContent, has been liked by $likedName")
                 .setToken(recipientToken)
                 .build()
 

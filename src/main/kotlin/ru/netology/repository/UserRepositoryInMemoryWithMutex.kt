@@ -18,6 +18,9 @@ class UserRepositoryInMemoryWithMutex : UserRepository {
 
     override suspend fun getByUsername(username: String): UserModel? = items.find { it.username == username }
 
+    override suspend fun getPushTokenById(id: Int): String? =
+        pushTokenWithUserIdMap[id]
+
     override suspend fun savePushTokenWithUserId(id: Int, token: String) {
         pushTokenWithUserIdMap[id] = token
     }

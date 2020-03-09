@@ -10,6 +10,9 @@ import ru.netology.dto.ErrorResponseDto
 import ru.netology.exception.*
 
 fun StatusPages.Configuration.exceptions() {
+    exception<PushTokenNotFoundException> {
+        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Push token not found"))
+    }
     exception<AlreadyRepostedException> {
         call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("This post has already been reposted"))
     }

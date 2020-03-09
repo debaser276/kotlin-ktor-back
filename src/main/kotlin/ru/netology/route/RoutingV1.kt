@@ -93,6 +93,8 @@ class RoutingV1(
                         }
                         put("/{id}/like") {
                             val response = postService.likeById(id, me!!.id)
+                            val pushToken = userService.getPushTokenById(response.id)
+                            fcmService.sendLikeAdd(me!!.username, pushToken, response.content?.take(10))
                             call.respond(response)
                         }
                         put("/{id}/dislike") {

@@ -7,6 +7,7 @@ import ru.netology.dto.AuthenticationRequestDto
 import ru.netology.dto.AuthenticationResponseDto
 import ru.netology.dto.UserResponseDto
 import ru.netology.exception.InvalidPasswordException
+import ru.netology.exception.PushTokenNotFoundException
 import ru.netology.exception.UserNotFoundException
 import ru.netology.model.UserModel
 import ru.netology.repository.UserRepository
@@ -44,6 +45,8 @@ class UserService(
         val token = tokenService.generate(model.id)
         return AuthenticationResponseDto(model.id, token)
     }
+
+    suspend fun getPushTokenById(id: Int) = repo.getPushTokenById(id) ?: throw PushTokenNotFoundException()
 
     suspend fun savePushTokenWithUserID(id: Int, token: String) = repo.savePushTokenWithUserId(id, token)
 }
