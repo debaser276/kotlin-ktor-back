@@ -52,7 +52,7 @@ class FCMService(
                 .putData("type", "likeAdd")
                 .putData("recipientPostId", recepientPostId.toString())
                 .putData("title", "Like")
-                .putData("content", "Your post: $postContent, has been liked by $likedName")
+                .putData("content", "Your post: ${recepientPostId.toString()} $postContent, has been liked by $likedName")
                 .setToken(recipientToken)
                 .build()
 
