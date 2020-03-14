@@ -1,5 +1,7 @@
 package ru.netology
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -20,6 +22,12 @@ import ru.netology.statuspages.exceptions
 fun main(args : Array<String>) {
     EngineMain.main(args)
 }
+
+val hikariConfig = HikariConfig().apply {
+    jdbcUrl = System.getenv("DATABASE_URL")
+}
+
+val dataSource = HikariDataSource(hikariConfig)
 
 fun Application.module() {
     install(ContentNegotiation) {
