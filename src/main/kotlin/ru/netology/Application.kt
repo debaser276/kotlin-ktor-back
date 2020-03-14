@@ -18,13 +18,16 @@ import ru.netology.route.RoutingV1
 import ru.netology.service.JWTTokenService
 import ru.netology.service.UserService
 import ru.netology.statuspages.exceptions
+import java.net.URI
 
 fun main(args : Array<String>) {
     EngineMain.main(args)
 }
 
 val hikariConfig = HikariConfig().apply {
-    jdbcUrl = System.getenv("DATABASE_URL")
+    val databaseUrl = System.getenv("DATABASE_URL")
+    val dbUri = URI(databaseUrl)
+    jdbcUrl = "jdbc:postgresql://${dbUri.userInfo}@${dbUri.host}${dbUri.path}"
     driverClassName = "org.postgresql.Driver"
 }
 
