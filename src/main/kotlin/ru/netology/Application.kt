@@ -24,8 +24,11 @@ fun main(args : Array<String>) {
 }
 
 val hikariConfig = HikariConfig().apply {
+    username = "hwxrytwufnyuic"
+    password = "58fe0152031067f9a6d577382335dba82ade9592e5316ca65d05d8bbd7a46038"
+
     jdbcUrl = System.getenv("DATABASE_URL")
-    driverClassName = "org.postgresql.ds.PGSimpleDataSource"
+    dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
 }
 
 val dataSource = HikariDataSource(hikariConfig)
