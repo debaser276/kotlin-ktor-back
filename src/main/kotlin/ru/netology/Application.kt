@@ -25,6 +25,7 @@ fun main(args : Array<String>) {
 
 val hikariConfig = HikariConfig().apply {
     jdbcUrl = System.getenv("DATABASE_URL")
+    driverClassName = "org.postgresql.ds.PGSimpleDataSource"
 }
 
 val dataSource = HikariDataSource(hikariConfig)
