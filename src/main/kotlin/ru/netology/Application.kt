@@ -27,7 +27,9 @@ fun main(args : Array<String>) {
 val hikariConfig = HikariConfig().apply {
     val databaseUrl = System.getenv("DATABASE_URL")
     val dbUri = URI(databaseUrl)
-    jdbcUrl = "jdbc:postgresql://${dbUri.userInfo}@${dbUri.host}${dbUri.path}"
+    username = dbUri.userInfo.split(":")[0]
+    password = dbUri.userInfo.split(":")[1]
+    jdbcUrl = "jdbc:postgresql://${dbUri.host}${dbUri.path}"
     driverClassName = "org.postgresql.Driver"
 }
 
