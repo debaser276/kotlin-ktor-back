@@ -4,6 +4,7 @@ import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
 import ru.netology.exception.AlreadyRepostedException
 import ru.netology.exception.ForbiddenException
+import ru.netology.exception.NoPostsException
 import ru.netology.exception.PostNotFoundException
 import ru.netology.model.AttachmentModel
 import ru.netology.model.MediaType
@@ -24,6 +25,7 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
     }
 
     suspend fun getAfter(id: Int): List<PostResponseDto> {
+        if (repo.getAll().isEmpty()) throw NoPostsException()
         return getAll().asSequence().filter { it.id > id }.take(resultSize).toList()
     }
 

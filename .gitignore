@@ -39,7 +39,3 @@ out/
 *.zip
 *.tar.gz
 *.rar
-
-fcm/
-!fcm/fcm-encrypted.json
-!/gradle/wrapper/gradle-wrapper.jar
