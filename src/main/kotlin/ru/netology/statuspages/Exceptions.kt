@@ -10,6 +10,9 @@ import ru.netology.dto.ErrorResponseDto
 import ru.netology.exception.*
 
 fun StatusPages.Configuration.exceptions() {
+    exception<LoginAlreadyExistsException> {
+        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Login already exists"))
+    }
     exception<NoPostsException> {
         call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("There are no post yet"))
     }

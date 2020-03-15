@@ -6,17 +6,16 @@ import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
 import io.ktor.features.ParameterConversionException
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.cio.HttpPipelineCoroutine
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.request.receive
 import io.ktor.request.receiveMultipart
-import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.pipeline.PipelineContext
 import org.slf4j.Logger
 import ru.netology.dto.*
+import ru.netology.exception.LoginAlreadyExistsException
 import ru.netology.model.UserModel
 import ru.netology.service.FCMService
 import ru.netology.service.FileService
@@ -47,8 +46,8 @@ class RoutingV1(
                 post("/registration") {
                     val input = call.receive<AuthenticationRequestDto>()
                     when(userService.getByUsername(input.username)) {
-                        null -> call.respond(userService.registrate(input))
-                        else -> call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Login already exists"))
+                        null -> call.respond(userService.register(input))
+                        else -> throw LoginAlreadyExistsException()
                     }
                 }
 
@@ -62,7 +61,7 @@ class RoutingV1(
                     route("/push") {
                         post() {
                             val input = call.receive<PushRequestDto>()
-                            userService.savePushTokenWithUserID(me!!.id, input.token)
+                            userService.savePushTokenWithUserId(me!!.id, input.token)
                             fcmService.sendWelcome(me!!.username, input.token)
                             call.respond(HttpStatusCode.OK)
                         }

@@ -10,10 +10,12 @@ import io.ktor.features.*
 import io.ktor.gson.gson
 import io.ktor.routing.Routing
 import io.ktor.server.cio.EngineMain
+import org.jetbrains.exposed.sql.Database
 import org.kodein.di.generic.*
 import org.kodein.di.ktor.KodeinFeature
 import org.kodein.di.ktor.kodein
 import ru.netology.kodein.singletons
+import ru.netology.repository.DatabaseFactory
 import ru.netology.route.RoutingV1
 import ru.netology.service.JWTTokenService
 import ru.netology.service.UserService
@@ -23,17 +25,6 @@ import java.net.URI
 fun main(args : Array<String>) {
     EngineMain.main(args)
 }
-
-val hikariConfig = HikariConfig().apply {
-    val databaseUrl = System.getenv("DATABASE_URL")
-    val dbUri = URI(databaseUrl)
-    username = dbUri.userInfo.split(":")[0]
-    password = dbUri.userInfo.split(":")[1]
-    jdbcUrl = "jdbc:postgresql://${dbUri.host}${dbUri.path}"
-    driverClassName = "org.postgresql.Driver"
-}
-
-val dataSource = HikariDataSource(hikariConfig)
 
 fun Application.module() {
     install(ContentNegotiation) {
@@ -63,6 +54,8 @@ fun Application.module() {
             }
         }
     }
+
+    DatabaseFactory.init()
 
     install(Routing) {
         val routingV1 by kodein().instance<RoutingV1>()

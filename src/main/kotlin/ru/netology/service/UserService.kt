@@ -1,52 +1,77 @@
 package ru.netology.service
 
+import ru.netology.repository.DatabaseFactory.dbQuery
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.dto.AuthenticationRequestDto
 import ru.netology.dto.AuthenticationResponseDto
-import ru.netology.dto.UserResponseDto
-import ru.netology.exception.InvalidPasswordException
-import ru.netology.exception.PushTokenNotFoundException
-import ru.netology.exception.UserNotFoundException
+import ru.netology.exception.*
+import ru.netology.model.NewUser
 import ru.netology.model.UserModel
-import ru.netology.repository.UserRepository
+import ru.netology.model.Users
 
 class UserService(
-    private val repo: UserRepository,
     private val tokenService: JWTTokenService,
     private val passwordEncoder: PasswordEncoder
 ) {
+    private val pushTokenWithUserIdMap = mutableMapOf<Int, String>()
     private val mutex = Mutex()
 
-    suspend fun getModelById(id: Int): UserModel? = repo.getById(id)
-
-    suspend fun getById(id: Int): UserResponseDto {
-        val model = repo.getById(id) ?: throw UserNotFoundException()
-        return UserResponseDto.fromModel(model)
+    suspend fun insertUser(user: NewUser) = dbQuery {
+        Users.insert {
+            it[username] = user.username
+            it[password] = user.password
+        }
     }
 
-    suspend fun getByUsername(username: String): UserModel? = repo.getByUsername(username)
+    suspend fun getModelById(id: Int): UserModel? =
+        dbQuery {
+            Users.select{ Users.id eq id }.mapNotNull { toUserModel(it) }.singleOrNull()
+        }
 
-    suspend fun registrate(input: AuthenticationRequestDto): AuthenticationResponseDto {
+    suspend fun getByUsername(username: String): UserModel? =
+        dbQuery {
+            Users.select{ Users.username eq username }.mapNotNull { toUserModel(it) }.singleOrNull()
+        }
+
+
+    suspend fun register(input: AuthenticationRequestDto): AuthenticationResponseDto {
         mutex.withLock {
-            val model =
-                repo.add(UserModel(username = input.username, password = passwordEncoder.encode(input.password)))
-            val token = tokenService.generate(model.id)
-            return AuthenticationResponseDto(model.id, token)
+            val user = NewUser(
+                username = input.username,
+                password = passwordEncoder.encode(input.password)
+            )
+            insertUser(user)
+            val id = getByUsername(user.username)?.id ?: throw LoginAlreadyExistsException()
+            val token = tokenService.generate(id)
+            return AuthenticationResponseDto(id, token)
         }
     }
 
     suspend fun authenticate(input: AuthenticationRequestDto): AuthenticationResponseDto {
-        val model = repo.getByUsername(input.username) ?: throw UserNotFoundException()
-        if (!passwordEncoder.matches(input.password, model.password)) {
+        val user = getByUsername(input.username) ?: throw UserNotFoundException()
+        if (!passwordEncoder.matches(input.password, user.password)) {
             throw InvalidPasswordException()
         }
-        val token = tokenService.generate(model.id)
-        return AuthenticationResponseDto(model.id, token)
+        val token = tokenService.generate(user.id)
+        return AuthenticationResponseDto(user.id, token)
     }
 
-    suspend fun getPushTokenById(id: Int) = repo.getPushTokenById(id) ?: throw PushTokenNotFoundException()
+    fun getPushTokenById(id: Int): String =
+        pushTokenWithUserIdMap.getOrElse(id, throw PushTokenNotFoundException())
 
-    suspend fun savePushTokenWithUserID(id: Int, token: String) = repo.savePushTokenWithUserId(id, token)
+    fun savePushTokenWithUserId(id: Int, token: String) {
+        pushTokenWithUserIdMap[id] = token
+    }
+
+    private fun toUserModel(row: ResultRow): UserModel =
+        UserModel(
+            id = row[Users.id],
+            username = row[Users.username],
+            password = row[Users.password]
+        )
 }
