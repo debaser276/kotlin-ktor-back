@@ -1,4 +1,4 @@
-package ru.netology.database
+package ru.netology.repository
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -7,7 +7,8 @@ import ru.netology.exception.AlreadyLikedException
 import ru.netology.exception.NotLikedYetException
 import ru.netology.model.PostModel
 
-class PostRepositoryInMemoryWithMutexImpl(private val logger: Logger) : PostRepository {
+class PostRepositoryInMemoryWithMutexImpl(private val logger: Logger) :
+    PostRepository {
     private var nextId = 1
     private val posts = mutableListOf<PostModel>()
     private val mutex = Mutex()

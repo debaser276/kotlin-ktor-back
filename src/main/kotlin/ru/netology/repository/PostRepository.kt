@@ -1,4 +1,4 @@
-package ru.netology.database
+package ru.netology.repository
 
 import ru.netology.model.PostModel
 

@@ -12,7 +12,7 @@ import org.kodein.di.generic.*
 import org.kodein.di.ktor.KodeinFeature
 import org.kodein.di.ktor.kodein
 import ru.netology.kodein.singletons
-import ru.netology.database.DatabaseFactory
+import ru.netology.repository.DatabaseFactory
 import ru.netology.route.RoutingV1
 import ru.netology.service.JWTTokenService
 import ru.netology.service.UserService

@@ -1,4 +1,4 @@
-package ru.netology.database
+package ru.netology.repository
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
