@@ -7,8 +7,8 @@ import org.kodein.di.generic.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.exception.ConfigurationException
-import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
+import ru.netology.database.PostRepository
+import ru.netology.database.PostRepositoryInMemoryWithMutexImpl
 import ru.netology.route.RoutingV1
 import ru.netology.service.*
 

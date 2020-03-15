@@ -1,6 +1,6 @@
 package ru.netology.service
 
-import ru.netology.repository.DatabaseFactory.dbQuery
+import ru.netology.database.DatabaseFactory.dbQuery
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.ResultRow

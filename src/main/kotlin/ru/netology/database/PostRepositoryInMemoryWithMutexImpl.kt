@@ -1,4 +1,4 @@
-package ru.netology.repository
+package ru.netology.database
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

@@ -10,7 +10,7 @@ import ru.netology.model.AttachmentModel
 import ru.netology.model.MediaType
 import ru.netology.model.PostModel
 import ru.netology.model.PostType
-import ru.netology.repository.PostRepository
+import ru.netology.database.PostRepository
 
 class PostService(private val repo: PostRepository, private val resultSize: Int) {
     suspend fun getAll(): List<PostResponseDto> = repo.getAll()
