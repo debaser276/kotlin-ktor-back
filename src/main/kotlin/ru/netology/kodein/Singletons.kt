@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.exception.ConfigurationException
 import ru.netology.repository.PostRepository
 import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
+import ru.netology.repository.UserRepository
+import ru.netology.repository.UserRepositoryDatabase
 import ru.netology.route.RoutingV1
 import ru.netology.service.*
 
@@ -43,7 +45,8 @@ fun Kodein.MainBuilder.singletons(app: Application) {
         )
     }
     bind<PostService>() with eagerSingleton { PostService(instance(), instance(tag = "result-size")) }
-    bind<UserService>() with eagerSingleton { UserService(instance(), instance()) }
+    bind<UserRepository>() with eagerSingleton { UserRepositoryDatabase() }
+    bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
     bind<RoutingV1>() with eagerSingleton {
         RoutingV1(instance(tag = "upload-dir"),
             instance(),
