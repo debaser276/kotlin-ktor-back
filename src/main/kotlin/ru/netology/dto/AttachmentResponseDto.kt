@@ -4,7 +4,7 @@ import ru.netology.model.AttachmentModel
 import ru.netology.model.MediaType
 
 data class AttachmentResponseDto (
-    val id: String,
+    val id: String?,
     val mediaType: MediaType
 ) {
     companion object {
