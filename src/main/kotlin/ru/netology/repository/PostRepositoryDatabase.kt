@@ -7,6 +7,16 @@ import org.jetbrains.exposed.sql.selectAll
 import ru.netology.model.*
 import ru.netology.repository.DatabaseFactory.dbQuery
 
+interface PostRepository {
+    suspend fun getAll(): List<PostModel>
+    suspend fun getById(id: Int): PostModel?
+    suspend fun save(post: PostModel): PostModel
+    suspend fun removeById(id: Int): List<PostModel>?
+    suspend fun likeById(id: Int, userId: Int): PostModel?
+    suspend fun dislikeById(id: Int, userId: Int): PostModel?
+    suspend fun shareById(id: Int): PostModel?
+}
+
 class PostRepositoryDatabase : PostRepository {
     override suspend fun getAll(): List<PostModel> = dbQuery {
         Posts.selectAll().map { toPostModel(it) }

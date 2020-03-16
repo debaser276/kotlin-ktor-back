@@ -12,29 +12,25 @@ import ru.netology.repository.DatabaseFactory.dbQuery
 interface UserRepository {
     suspend fun getAll(): List<UserModel>
     suspend fun getById(id: Int): UserModel?
-    suspend fun getByIds(ids: Collection<Int>): List<UserModel>
     suspend fun getByUsername(username: String): UserModel?
     suspend fun add(item: UserModel): Int?
-    suspend fun save(item: UserModel): UserModel
     suspend fun getPushTokenById(id: Int): String?
     suspend fun savePushTokenWithUserId(id: Int, token: String)
 }
 
 class UserRepositoryDatabase : UserRepository {
+    private val pushTokenWithUserIdMap = mutableMapOf<Int, String>()
+
     override suspend fun getAll(): List<UserModel> = dbQuery {
         Users.selectAll().map { toUserModel(it) }
     }
 
-    override suspend fun getById(id: Int): UserModel? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun getByIds(ids: Collection<Int>): List<UserModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun getById(id: Int): UserModel? = dbQuery {
+        Users.select { Users.id eq id }.map { toUserModel(it) }.singleOrNull()
     }
 
     override suspend fun getByUsername(username: String): UserModel? = dbQuery {
-        Users.select { Users.username eq username }.mapNotNull { toUserModel(it) }.singleOrNull()
+        Users.select { Users.username eq username }.map { toUserModel(it) }.singleOrNull()
     }
 
     override suspend fun add(item: UserModel): Int? = dbQuery {
@@ -44,16 +40,11 @@ class UserRepositoryDatabase : UserRepository {
         }[Users.id]
     }
 
-    override suspend fun save(item: UserModel): UserModel {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override suspend fun getPushTokenById(id: Int): String? =
+        pushTokenWithUserIdMap[id]
 
-    override suspend fun getPushTokenById(id: Int): String? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun savePushTokenWithUserId(id: Int, token: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun savePushTokenWithUserId(id: Int, token: String)  {
+        pushTokenWithUserIdMap[id] = token
     }
 
     private fun toUserModel(row: ResultRow): UserModel =
