@@ -10,6 +10,9 @@ import ru.netology.dto.ErrorResponseDto
 import ru.netology.exception.*
 
 fun StatusPages.Configuration.exceptions() {
+    exception<DatabaseException> {
+        call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Database exception"))
+    }
     exception<LoginAlreadyExistsException> {
         call.respond(HttpStatusCode.BadRequest, ErrorResponseDto("Login already exists"))
     }
