@@ -16,8 +16,8 @@ class PostRepositoryDatabase : PostRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun save(post: PostModel): PostModel = dbQuery {
-        Posts.insert {  }
+    override suspend fun save(post: PostModel): PostModel {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override suspend fun removeById(id: Int): List<PostModel>? {

@@ -61,7 +61,7 @@ class RoutingV1(
                     route("/push") {
                         post() {
                             val input = call.receive<PushRequestDto>()
-                            userService.savePushTokenWithUserId(me!!.id, input.token)
+                            userService.savePushTokenWithUserID(me!!.id, input.token)
                             fcmService.sendWelcome(me!!.username, input.token)
                             call.respond(HttpStatusCode.OK)
                         }

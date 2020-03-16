@@ -10,13 +10,8 @@ object Users: Table() {
     val password: Column<String> = varchar("password", 100)
 }
 
-data class NewUser(
-    val username: String,
-    val password: String
-)
-
 data class UserModel(
-    val id: Int,
+    val id: Int = 0,
     val username: String,
     val password: String
 ): Principal
