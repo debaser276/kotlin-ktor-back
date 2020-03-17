@@ -81,8 +81,8 @@ class PostRepositoryDatabase : PostRepository {
 
     override suspend fun addRepost(id: Int): Unit = dbQuery {
         Posts.update({ Posts.id eq id }) {
+            it[repostedSet] = "$repostedSet,$id"
             with(SqlExpressionBuilder) {
-                it.update(repostedSet, repostedSet + "$id")
                 it.update(reposts, reposts + 1)
             }
         }
