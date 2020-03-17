@@ -18,7 +18,7 @@ interface PostRepository {
 
 class PostRepositoryDatabase : PostRepository {
     override suspend fun getAll(): List<PostModel> = dbQuery {
-        Posts.selectAll().map { toPostModel(it) }
+        Posts.selectAll().map { toPostModel(it) }.reversed()
     }
 
     override suspend fun getById(id: Int): PostModel? = dbQuery {
@@ -59,6 +59,9 @@ class PostRepositoryDatabase : PostRepository {
             likedSet.add(userId)
             Posts.update({ Posts.id eq id }) {
                 it[Posts.likedSet] = likedSet.joinToString(",")
+                with(SqlExpressionBuilder) {
+                    it.update(Posts.likes, Posts.likes + 1)
+                }
             }
             Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
         } else throw AlreadyLikedException()
@@ -70,6 +73,9 @@ class PostRepositoryDatabase : PostRepository {
             likedSet.remove(userId)
             Posts.update({ Posts.id eq id }) {
                 it[Posts.likedSet] = likedSet.joinToString(",")
+                with(SqlExpressionBuilder) {
+                    it.update(Posts.likes, Posts.likes - 1)
+                }
             }
             Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
         } else throw AlreadyLikedException()
