@@ -17,7 +17,7 @@ interface PostRepository {
 
 class PostRepositoryDatabase : PostRepository {
     override suspend fun getAll(): List<PostModel> = dbQuery {
-        Posts.selectAll().map {
+        Posts.selectAll().orderBy(Posts.id to SortOrder.DESC).map {
             toPostModel(it)
         }
     }
