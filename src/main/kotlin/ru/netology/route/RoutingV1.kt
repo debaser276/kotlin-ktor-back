@@ -107,10 +107,6 @@ class RoutingV1(
                             val response = postService.dislikeById(id, me!!.id)
                             call.respond(response)
                         }
-                        put("/{id}/share") {
-                            val response = postService.shareById(id)
-                            call.respond(response)
-                        }
                         patch("/{id}") {
                             val input = call.receive<PostRequestDto>()
                             val response = postService.editPost(id, input, me!!.username)
