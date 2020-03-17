@@ -13,12 +13,13 @@ interface PostRepository {
     suspend fun removeById(id: Int)
     suspend fun likeById(id: Int, userId: Int)
     suspend fun dislikeById(id: Int, userId: Int)
-    suspend fun shareById(id: Int): PostModel?
 }
 
 class PostRepositoryDatabase : PostRepository {
     override suspend fun getAll(): List<PostModel> = dbQuery {
-        Posts.selectAll().map { toPostModel(it) }.reversed()
+        Posts.selectAll().map {
+            toPostModel(it)
+        }
     }
 
     override suspend fun getById(id: Int): PostModel? = dbQuery {
@@ -60,7 +61,7 @@ class PostRepositoryDatabase : PostRepository {
             Posts.update({ Posts.id eq id }) {
                 it[Posts.likedSet] = likedSet.joinToString(",")
                 with(SqlExpressionBuilder) {
-                    it.update(Posts.likes, Posts.likes + 1)
+                    it.update(likes, likes + 1)
                 }
             }
             Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
@@ -74,16 +75,11 @@ class PostRepositoryDatabase : PostRepository {
             Posts.update({ Posts.id eq id }) {
                 it[Posts.likedSet] = likedSet.joinToString(",")
                 with(SqlExpressionBuilder) {
-                    it.update(Posts.likes, Posts.likes - 1)
+                    it.update(likes, likes - 1)
                 }
             }
             Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
         } else throw AlreadyLikedException()
-    }
-
-
-    override suspend fun shareById(id: Int): PostModel? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun toPostModel(row: ResultRow): PostModel = PostModel(

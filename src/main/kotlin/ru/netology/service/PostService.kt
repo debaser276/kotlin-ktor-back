@@ -49,11 +49,6 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
         return PostResponseDto.fromModel(getModelById(id))
     }
 
-    suspend fun shareById(id: Int): PostResponseDto {
-        val model = repo.shareById(id) ?: throw PostNotFoundException()
-        return PostResponseDto.fromModel(getModelById(repo.save(model)))
-    }
-
     suspend fun editPost(id: Int, input: PostRequestDto, username: String): PostResponseDto {
         val model = repo.getById(id) ?: throw PostNotFoundException()
         if (username == model.author) {
