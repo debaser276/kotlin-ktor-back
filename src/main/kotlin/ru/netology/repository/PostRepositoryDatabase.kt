@@ -80,8 +80,10 @@ class PostRepositoryDatabase : PostRepository {
     }
 
     override suspend fun addRepost(id: Int): Unit = dbQuery {
+        val repostedSet = Posts.select { Posts.id eq id }.map { toPostModel(it) }.single().repostedSet
+        repostedSet.add(id)
         Posts.update({ Posts.id eq id }) {
-            it[repostedSet] = "$repostedSet,$id"
+            it[Posts.repostedSet] = repostedSet.joinToString(",")
             with(SqlExpressionBuilder) {
                 it.update(reposts, reposts + 1)
             }
