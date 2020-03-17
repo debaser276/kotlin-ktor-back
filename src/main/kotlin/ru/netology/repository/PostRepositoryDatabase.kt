@@ -13,7 +13,7 @@ interface PostRepository {
     suspend fun removeById(id: Int)
     suspend fun likeById(id: Int, userId: Int)
     suspend fun dislikeById(id: Int, userId: Int)
-    suspend fun addRepost(id: Int)
+    suspend fun addRepost(id: Int, authorId: Int)
 }
 
 class PostRepositoryDatabase : PostRepository {
@@ -79,9 +79,9 @@ class PostRepositoryDatabase : PostRepository {
         Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
     }
 
-    override suspend fun addRepost(id: Int): Unit = dbQuery {
+    override suspend fun addRepost(id: Int, authorId: Int): Unit = dbQuery {
         val repostedSet = Posts.select { Posts.id eq id }.map { toPostModel(it) }.single().repostedSet
-        repostedSet.add(id)
+        repostedSet.add(authorId)
         Posts.update({ Posts.id eq id }) {
             it[Posts.repostedSet] = repostedSet.joinToString(",")
             with(SqlExpressionBuilder) {

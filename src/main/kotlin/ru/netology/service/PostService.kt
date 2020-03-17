@@ -61,7 +61,7 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
     suspend fun repost(sourceId: Int, authorId: Int, author: String, content: String): PostResponseDto {
         val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
         if (sourcePost.repostedSet.contains(authorId)) throw AlreadyRepostedException()
-        repo.addRepost(sourceId)
+        repo.addRepost(sourceId, authorId)
         return PostResponseDto.fromModel(getModelById(repo.save(PostModel(
             authorId = authorId,
             author = author,
