@@ -2,10 +2,7 @@ package ru.netology.service
 
 import ru.netology.dto.PostRequestDto
 import ru.netology.dto.PostResponseDto
-import ru.netology.exception.AlreadyRepostedException
-import ru.netology.exception.ForbiddenException
-import ru.netology.exception.NoPostsException
-import ru.netology.exception.PostNotFoundException
+import ru.netology.exception.*
 import ru.netology.model.AttachmentModel
 import ru.netology.model.MediaType
 import ru.netology.model.PostModel
@@ -38,13 +35,15 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
         repo.getById(id) ?: throw PostNotFoundException()
 
     suspend fun likeById(id: Int, userId: Int): PostResponseDto {
-        repo.getById(id) ?: throw PostNotFoundException()
+        val post = repo.getById(id) ?: throw PostNotFoundException()
+        if (post.likedSet.contains(userId)) throw AlreadyLikedException()
         repo.likeById(id, userId)
         return PostResponseDto.fromModel(getModelById(id))
     }
 
     suspend fun dislikeById(id: Int, userId: Int): PostResponseDto {
-        repo.getById(id) ?: throw PostNotFoundException()
+        val post = repo.getById(id) ?: throw PostNotFoundException()
+        if (!post.likedSet.contains(userId)) throw NotLikedYetException()
         repo.dislikeById(id, userId)
         return PostResponseDto.fromModel(getModelById(id))
     }
@@ -56,24 +55,19 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
                 content = input.content,
                 address = input.address,
                 link = input.link))))
-            } else {
-            throw ForbiddenException()
-        }
+        } else throw ForbiddenException()
     }
 
     suspend fun repost(sourceId: Int, authorId: Int, author: String, content: String): PostResponseDto {
         val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
         if (sourcePost.repostedSet.contains(authorId)) throw AlreadyRepostedException()
-        PostResponseDto.fromModel(getModelById(repo.save(PostModel(
+        repo.addRepost(sourceId)
+        return PostResponseDto.fromModel(getModelById(repo.save(PostModel(
             authorId = authorId,
             author = author,
             sourceId = sourceId,
             content = "Repost of SourceId: $sourceId. ${sourcePost.content}",
             type = PostType.REPOST
-        ))))
-        return PostResponseDto.fromModel(getModelById(repo.save(sourcePost.copy(
-            reposts = sourcePost.reposts + 1,
-            repostedSet = sourcePost.repostedSet.apply { add(authorId) }
         ))))
     }
 

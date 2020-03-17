@@ -13,6 +13,7 @@ interface PostRepository {
     suspend fun removeById(id: Int)
     suspend fun likeById(id: Int, userId: Int)
     suspend fun dislikeById(id: Int, userId: Int)
+    suspend fun addRepost(id: Int)
 }
 
 class PostRepositoryDatabase : PostRepository {
@@ -56,30 +57,35 @@ class PostRepositoryDatabase : PostRepository {
 
     override suspend fun likeById(id: Int, userId: Int): Unit = dbQuery {
         val likedSet = Posts.select { Posts.id eq id }.map { toPostModel(it) }.single().likedSet
-        if (!likedSet.contains(userId)) {
-            likedSet.add(userId)
-            Posts.update({ Posts.id eq id }) {
-                it[Posts.likedSet] = likedSet.joinToString(",")
-                with(SqlExpressionBuilder) {
-                    it.update(likes, likes + 1)
-                }
+        likedSet.add(userId)
+        Posts.update({ Posts.id eq id }) {
+            it[Posts.likedSet] = likedSet.joinToString(",")
+            with(SqlExpressionBuilder) {
+                it.update(likes, likes + 1)
             }
-            Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
-        } else throw AlreadyLikedException()
+        }
+        Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
     }
 
     override suspend fun dislikeById(id: Int, userId: Int): Unit = dbQuery {
         val likedSet = Posts.select { Posts.id eq id }.map { toPostModel(it) }.single().likedSet
-        if (likedSet.contains(userId)) {
-            likedSet.remove(userId)
-            Posts.update({ Posts.id eq id }) {
-                it[Posts.likedSet] = likedSet.joinToString(",")
-                with(SqlExpressionBuilder) {
-                    it.update(likes, likes - 1)
-                }
+        likedSet.remove(userId)
+        Posts.update({ Posts.id eq id }) {
+            it[Posts.likedSet] = likedSet.joinToString(",")
+            with(SqlExpressionBuilder) {
+                it.update(likes, likes - 1)
             }
-            Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
-        } else throw AlreadyLikedException()
+        }
+        Posts.select { Posts.id eq id }.map { toPostModel(it) }.singleOrNull()
+    }
+
+    override suspend fun addRepost(id: Int): Unit = dbQuery {
+        Posts.update({ Posts.id eq id }) {
+            with(SqlExpressionBuilder) {
+                it.update(repostedSet, repostedSet + "$id")
+                it.update(reposts, reposts + 1)
+            }
+        }
     }
 
     private fun toPostModel(row: ResultRow): PostModel = PostModel(
