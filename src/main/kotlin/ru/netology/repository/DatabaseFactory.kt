@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.netology.model.Posts
 import ru.netology.model.Users
 import java.net.URI
 
@@ -15,7 +16,7 @@ object DatabaseFactory {
     fun init() {
         Database.connect(hikari())
         transaction {
-            SchemaUtils.create(Users)
+            SchemaUtils.create(Users, Posts)
         }
     }
 

@@ -1,10 +1,10 @@
 package ru.netology.model
 
 enum class MediaType {
-    IMAGE
+    IMAGE, NOMEDIA
 }
 
 data class AttachmentModel(
     val id: String?,
-    val mediaType: MediaType
+    val mediaType: MediaType = MediaType.NOMEDIA
 )

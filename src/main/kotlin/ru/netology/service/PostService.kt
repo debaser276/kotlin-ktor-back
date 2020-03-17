@@ -34,28 +34,33 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
         return PostResponseDto.fromModel(model)
     }
 
+    suspend fun getModelById(id: Int): PostModel =
+        repo.getById(id) ?: throw PostNotFoundException()
+
     suspend fun likeById(id: Int, userId: Int): PostResponseDto {
-        val model = repo.likeById(id, userId) ?: throw PostNotFoundException()
-        return PostResponseDto.fromModel(repo.save(model))
+        repo.getById(id) ?: throw PostNotFoundException()
+        repo.likeById(id, userId)
+        return PostResponseDto.fromModel(getModelById(id))
     }
 
     suspend fun dislikeById(id: Int, userId: Int): PostResponseDto {
-        val model = repo.dislikeById(id, userId) ?: throw PostNotFoundException()
-        return PostResponseDto.fromModel(repo.save(model))
+        repo.getById(id) ?: throw PostNotFoundException()
+        repo.dislikeById(id, userId)
+        return PostResponseDto.fromModel(getModelById(id))
     }
 
     suspend fun shareById(id: Int): PostResponseDto {
         val model = repo.shareById(id) ?: throw PostNotFoundException()
-        return PostResponseDto.fromModel(repo.save(model))
+        return PostResponseDto.fromModel(getModelById(repo.save(model)))
     }
 
     suspend fun editPost(id: Int, input: PostRequestDto, username: String): PostResponseDto {
         val model = repo.getById(id) ?: throw PostNotFoundException()
         if (username == model.author) {
-            return PostResponseDto.fromModel(repo.save(model.copy(
+            return PostResponseDto.fromModel(getModelById(repo.save(model.copy(
                 content = input.content,
                 address = input.address,
-                link = input.link)))
+                link = input.link))))
             } else {
             throw ForbiddenException()
         }
@@ -64,17 +69,17 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
     suspend fun repost(sourceId: Int, authorId: Int, author: String, content: String): PostResponseDto {
         val sourcePost = repo.getById(sourceId) ?: throw PostNotFoundException()
         if (sourcePost.repostedSet.contains(authorId)) throw AlreadyRepostedException()
-        PostResponseDto.fromModel(repo.save(PostModel(
+        PostResponseDto.fromModel(getModelById(repo.save(PostModel(
             authorId = authorId,
             author = author,
             sourceId = sourceId,
             content = "Repost of SourceId: $sourceId. ${sourcePost.content}",
             type = PostType.REPOST
-        )))
-        return PostResponseDto.fromModel(repo.save(sourcePost.copy(
+        ))))
+        return PostResponseDto.fromModel(getModelById(repo.save(sourcePost.copy(
             reposts = sourcePost.reposts + 1,
             repostedSet = sourcePost.repostedSet.apply { add(authorId) }
-        )))
+        ))))
     }
 
     suspend fun post(input: PostRequestDto, authorId: Int, username: String): PostResponseDto {
@@ -87,7 +92,7 @@ class PostService(private val repo: PostRepository, private val resultSize: Int)
                 AttachmentModel(input.attachmentId, mediaType = MediaType.IMAGE)
             }
         )
-        return PostResponseDto.fromModel(repo.save(model))
+        return PostResponseDto.fromModel(getModelById(repo.save(model)))
     }
 
     suspend fun removeById(id: Int, username: String): List<PostResponseDto> {

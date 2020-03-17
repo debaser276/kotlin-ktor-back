@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.netology.exception.ConfigurationException
 import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryInMemoryWithMutexImpl
+import ru.netology.repository.PostRepositoryDatabase
 import ru.netology.repository.UserRepository
 import ru.netology.repository.UserRepositoryDatabase
 import ru.netology.route.RoutingV1
@@ -39,11 +39,7 @@ fun Kodein.MainBuilder.singletons(app: Application) {
     bind<PasswordEncoder>() with eagerSingleton { BCryptPasswordEncoder() }
     bind<JWTTokenService>() with eagerSingleton { JWTTokenService(instance(tag = "jwt-secret")) }
     bind<FileService>() with eagerSingleton { FileService(instance(tag = "upload-dir")) }
-    bind<PostRepository>() with singleton {
-        PostRepositoryInMemoryWithMutexImpl(
-            app.log
-        )
-    }
+    bind<PostRepository>() with singleton { PostRepositoryDatabase() }
     bind<PostService>() with eagerSingleton { PostService(instance(), instance(tag = "result-size")) }
     bind<UserRepository>() with eagerSingleton { UserRepositoryDatabase() }
     bind<UserService>() with eagerSingleton { UserService(instance(), instance(), instance()) }
